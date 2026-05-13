@@ -106,7 +106,7 @@ link_file() {
   fi
 }
 
-preserve_private_gitconfig() {
+preserve_local_gitconfig() {
   local gitconfig="${HOME}/.gitconfig"
   local local_gitconfig="${HOME}/.gitconfig.local"
 
@@ -121,13 +121,13 @@ preserve_private_gitconfig() {
     else
       cp "$gitconfig" "$local_gitconfig"
       chmod 600 "$local_gitconfig"
-      log "Preserved private git config at $local_gitconfig"
+      log "Preserved local git config at $local_gitconfig"
     fi
   fi
 }
 
 link_dotfiles() {
-  preserve_private_gitconfig
+  preserve_local_gitconfig
 
   link_file "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
   link_file "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
