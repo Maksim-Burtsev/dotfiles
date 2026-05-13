@@ -2,4 +2,7 @@
 	name = Maksim Burtsev
 	email = zadrot-lol@list.ru
 
+[include]
+	path = ~/.gitconfig.local
+
 # Private url.insteadOf entries from the local ~/.gitconfig are intentionally not tracked.
