@@ -1,0 +1,60 @@
+{
+    "editor.mouseWheelZoom": true,
+    "editor.fontFamily": "Monaco",
+    "files.autoSave": "afterDelay",
+    "terminal.integrated.fontSize": 17,
+    "files.autoSaveDelay": 100,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.suggestSelection": "first",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "workbench.iconTheme": null,
+    "workbench.editorAssociations": {
+        "*.db": "sqlite-viewer.option"
+    },
+    "editor.rulers": [
+
+    ],
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.wordWrapColumn": 120,
+    "editor.minimap.size": "fit",
+    "editor.minimap.enabled": false,
+    "editor.fontLigatures": false,
+    "editor.fontWeight": "normal",
+    "explorer.confirmDelete": false,
+    "python.analysis.indexing": true,
+    "workbench.colorCustomizations": {
+        "[Default Dark+]": {
+            "editor.background": "#282828",
+        }
+    },
+    "json.schemas": [
+
+
+    ],
+    "launch": {
+
+
+        "configurations": [],
+        "compounds": []
+    },
+    "workbench.activityBar.location": "hidden",
+    "editor.fontSize": 16,
+    "window.zoomLevel": -1,
+    "cmake.showOptionsMovedNotification": false,
+    "editor.accessibilitySupport": "off",
+    "go.toolsManagement.autoUpdate": true,
+    "python.terminal.activateEnvironment": true,
+    "python.languageServer": "Default",
+    "workbench.statusBar.visible": false,
+    "workbench.navigationControl.enabled": false,
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    "chat.commandCenter.enabled": false,
+    "claudeCode.preferredLocation": "panel",
+    "terminal.integrated.suggest.enabled": false,
+    "chat.extensionUnification.enabled": false,
+    "editor.lightbulb.enabled": "off",
+    "workbench.colorTheme": "Shokunin"
+}
