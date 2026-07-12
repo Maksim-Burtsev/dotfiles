@@ -9,7 +9,7 @@ Personal macOS dotfiles and bootstrap scripts.
 - `iterm/` - exported iTerm profile JSON for manual import.
 - `macos/` - macOS defaults script for Finder, keyboard, screenshots, and Dock.
 - `vscode/` - VSCode settings, keybindings, and extension list.
-- `zsh/` - zsh config split into aliases and functions.
+- `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.
 
 ## Install
 
@@ -31,7 +31,7 @@ Apply macOS defaults as well:
 ./install.sh --macos
 ```
 
-The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` before replacing them with symlinks.
+The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` before replacing them with symlinks. This includes `.zshrc` and `.zprofile`.
 
 ## Local Values
 
@@ -40,5 +40,7 @@ This repository stores public configuration only. Keep machine-local or sensitiv
 - `~/.zshrc.local`
 - `~/.gitconfig.local`
 - local `.env` files
+
+Before installing, move any sensitive or machine-local shell values from `~/.zshrc` into `~/.zshrc.local`. The tracked `.zshrc` loads that file last.
 
 The `.gitignore` is configured to keep common local credential files and key material out of Git.

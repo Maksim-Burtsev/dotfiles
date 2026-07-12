@@ -45,7 +45,7 @@
     "cmake.showOptionsMovedNotification": false,
     "editor.accessibilitySupport": "off",
     "go.toolsManagement.autoUpdate": true,
-    "python.terminal.activateEnvironment": true,
+    "python-envs.terminal.autoActivationType": "command",
     "python.languageServer": "Default",
     "workbench.statusBar.visible": false,
     "workbench.navigationControl.enabled": false,
@@ -56,5 +56,5 @@
     "terminal.integrated.suggest.enabled": false,
     "chat.extensionUnification.enabled": false,
     "editor.lightbulb.enabled": "off",
-    "workbench.colorTheme": "Shokunin"
+    "workbench.colorTheme": "Shokunin Light"
 }
