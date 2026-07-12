@@ -2,10 +2,12 @@ adpyke.codesnap
 adriaforcada.traditional-japanese-vscode-theme
 anthropic.claude-code
 braver.vscode-solarized
+covertcj.subtle-monochrome
 docker.docker
 enkia.tokyo-night
 golang.go
 grapecity.gc-excelviewer
+johnull.vscode-solarized-osaka-original-theme
 ktnrg45.vscode-cython
 magicstack.magicpython
 maksim-burtsev.gruvbit
@@ -29,6 +31,7 @@ ms-vscode.makefile-tools
 onemohitsharma.ukiyo-tone
 peterj.proto
 qwtel.sqlite-viewer
+sherloach.solarized-osaka
 sobolevn.pustota
 tomoki1207.pdf
 twxs.cmake

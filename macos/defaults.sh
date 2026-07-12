@@ -26,7 +26,7 @@ defaults write com.apple.screencapture disable-shadow -bool false
 # Dock
 defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock orientation -string "left"
-defaults write com.apple.dock tilesize -int 22
+defaults write com.apple.dock tilesize -int 33
 defaults write com.apple.dock largesize -int 128
 defaults write com.apple.dock show-recents -bool false
 defaults write com.apple.dock mineffect -string "scale"
