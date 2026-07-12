@@ -130,6 +130,7 @@ link_dotfiles() {
   preserve_local_gitconfig
 
   link_file "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
+  link_file "$DOTFILES_DIR/zsh/.zprofile" "$HOME/.zprofile"
   link_file "$DOTFILES_DIR/git/.gitconfig" "$HOME/.gitconfig"
   link_file "$DOTFILES_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
   link_file "$DOTFILES_DIR/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
