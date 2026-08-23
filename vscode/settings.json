@@ -14,7 +14,7 @@
         "*.db": "sqlite-viewer.option"
     },
     "editor.rulers": [
-
+        
     ],
     "security.workspace.trust.untrustedFiles": "open",
     "editor.wordWrapColumn": 120,
@@ -31,10 +31,10 @@
     },
     "json.schemas": [
 
-
+        
     ],
     "launch": {
-
+    
 
         "configurations": [],
         "compounds": []
@@ -56,5 +56,6 @@
     "terminal.integrated.suggest.enabled": false,
     "chat.extensionUnification.enabled": false,
     "editor.lightbulb.enabled": "off",
-    "workbench.colorTheme": "Shokunin Light"
+    "workbench.colorTheme": "Shokunin Dark",
+    "chat.titleBar.openInAgentsWindow.enabled": false
 }
