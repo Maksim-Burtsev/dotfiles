@@ -1,0 +1,7 @@
+interface:
+  display_name: "Visual Teacher"
+  short_description: "Visual explanations and note-ready teaching"
+  brand_color: "#2563EB"
+  default_prompt: "Use $visual-teacher to teach this with the smallest useful visual and note-ready takeaways."
+policy:
+  allow_implicit_invocation: true

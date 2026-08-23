@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>P-value mental model</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --paper: #fffdf8;
+      --text: #172033;
+      --muted: #5d6678;
+      --line: #cfd4dc;
+      --accent: #2457d6;
+      --accent-soft: #e6edff;
+      --shadow: 0 18px 45px rgba(45, 52, 69, 0.09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(36, 87, 214, 0.035) 1px, transparent 1px),
+        var(--bg);
+      background-size: 100% 28px;
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header,
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header { padding: 46px 0 24px; }
+    main { padding-bottom: 48px; }
+    h1 { margin: 0 0 10px; max-width: 820px; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.02; letter-spacing: -0.04em; }
+    h2 { margin: 0 0 12px; font-size: 1.25rem; letter-spacing: -0.02em; }
+    p { margin: 0 0 12px; }
+    .eyebrow { margin-bottom: 10px; color: var(--accent); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+    .muted { color: var(--muted); }
+
+    .overview {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.65fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 253, 248, 0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .section { margin-top: 18px; }
+    [hidden] { display: none !important; }
+
+    .diagram {
+      display: grid;
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .diagram[data-layout="flow"] {
+      grid-template-columns: var(--diagram-template, minmax(0, 1fr));
+    }
+
+    .diagram[data-layout="grid"] {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .diagram[data-layout="flow"][data-density="long"] {
+      grid-template-columns: 1fr;
+    }
+
+    .diagram[data-layout="flow"][data-density="long"] .arrow {
+      transform: rotate(90deg);
+    }
+
+    .node {
+      min-width: 0;
+      min-height: 112px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .node strong { display: block; margin-bottom: 6px; }
+    .node.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+    .arrow { align-self: center; color: var(--accent); font-size: 1.35rem; font-weight: 900; text-align: center; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+    button {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      background: #fff;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:hover { border-color: var(--accent); }
+    button:focus-visible { outline: 3px solid rgba(36, 87, 214, 0.3); outline-offset: 2px; }
+    button[aria-pressed="true"] { border-color: var(--accent); color: #fff; background: var(--accent); }
+
+    .current-item {
+      display: flex;
+      min-height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .current-index { color: var(--accent); font-size: 3rem; font-weight: 850; line-height: 1; }
+    .walkthrough { margin: 0; padding-left: 1.4rem; }
+    .walkthrough li { padding: 9px 4px; border-bottom: 1px solid var(--line); }
+    .walkthrough li:last-child { border-bottom: 0; }
+    .walkthrough strong { display: block; }
+
+    .table-scroll { max-width: 100%; overflow-x: auto; }
+    table { width: 100%; min-width: 560px; border-collapse: collapse; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 0.86rem; font-weight: 750; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    .notes { border-left: 5px solid var(--accent); }
+    .notes ul { margin: 0; padding-left: 1.25rem; }
+    .notes li + li { margin-top: 7px; }
+
+    @media (max-width: 980px) {
+      header, main { width: min(100% - 24px, 680px); }
+      header { padding-top: 30px; }
+      .overview { grid-template-columns: 1fr; }
+      .diagram[data-layout="flow"] { grid-template-columns: 1fr; }
+      .diagram[data-layout="flow"] .arrow { transform: rotate(90deg); }
+      .card { padding: 17px; }
+    }
+
+    @media print {
+      @page { margin: 13mm; }
+      html, body { min-height: 100%; background: #fff; color: #000; }
+      body { font-size: 11pt; }
+      header, main { width: 100%; padding: 0; }
+      header { margin-bottom: 6mm; }
+      .overview { grid-template-columns: 1fr; }
+      .card { border-color: #999; box-shadow: none; break-inside: avoid; }
+      .controls, .current-item { display: none; }
+      .diagram[data-layout="flow"] { grid-template-columns: 1fr; }
+      .diagram[data-layout="flow"] .arrow { transform: rotate(90deg); }
+      .table-scroll { overflow: visible; }
+      table { min-width: 0; }
+      .node.active { border-color: #555; background: #fff; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1 id="title"></h1>
+    <p id="subtitle" class="muted"></p>
+  </header>
+
+  <main>
+    <section class="overview" id="overview">
+      <article class="card" aria-labelledby="visual-heading">
+        <h2 id="visual-heading"></h2>
+        <p class="muted" id="visual-hint"></p>
+        <div class="diagram" id="diagram"></div>
+        <div class="controls" id="controls"></div>
+      </article>
+
+      <aside class="card current-item" id="current-section" aria-labelledby="current-heading">
+        <div>
+          <h2 id="current-heading"></h2>
+          <p id="current-title"><strong></strong></p>
+          <p id="current-text" aria-live="polite" aria-atomic="true"></p>
+        </div>
+        <div class="current-index" id="current-index" aria-hidden="true"></div>
+      </aside>
+    </section>
+
+    <section class="card section" id="walkthrough-section" aria-labelledby="walkthrough-heading">
+      <h2 id="walkthrough-heading"></h2>
+      <div id="walkthrough"></div>
+    </section>
+
+    <section class="card section" id="tradeoffs-section" aria-labelledby="tradeoffs-heading">
+      <h2 id="tradeoffs-heading"></h2>
+      <div class="table-scroll" tabindex="0" role="region" aria-labelledby="tradeoffs-heading">
+        <table>
+          <thead>
+            <tr id="tradeoffs-head"></tr>
+          </thead>
+          <tbody id="tradeoffs"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card section notes" id="notes-section" aria-labelledby="notes-heading">
+      <h2 id="notes-heading"></h2>
+      <ul id="notes"></ul>
+    </section>
+  </main>
+
+  <script>
+    const model = window.model = {
+      lang: "en",
+      layout: "flow",
+      labels: {
+        eyebrow: "Visual Teacher · study artifact",
+        visualModel: "Visual model",
+        visualHint: "Choose an item to focus the explanation.",
+        currentItem: "Current item",
+        selectItem: "Select",
+        walkthrough: "Walkthrough",
+        tradeoffs: "Caveats",
+        point: "Point",
+        meaning: "Meaning",
+        watchOut: "Watch out",
+        paperNotes: "Paper notes"
+      },
+      title: "What a p-value actually measures",
+      subtitle: "Assume the null hypothesis is true, then ask how surprising the observed data would be.",
+      steps: [
+        { title: "Assume H₀", text: "Start inside the world where the null hypothesis is true." },
+        { title: "Observe data", text: "Measure a test statistic from the sample." },
+        { title: "Count extremes", text: "Find results at least as extreme as the observation under H₀." },
+        { title: "Read p", text: "The tail probability is evidence compatibility, not P(H₀ | data)." }
+      ],
+      walkthrough: [
+        { title: "Fix the reference world", text: "The calculation conditions on H₀; it does not estimate the probability that H₀ is true." },
+        { title: "Locate the observation", text: "Convert the sample into the chosen test statistic." },
+        { title: "Measure the tail", text: "Add the probability of the observation and outcomes more extreme under H₀." }
+      ],
+      tradeoffs: [
+        ["Small p-value", "The data are unusual under H₀.", "It is not the probability that H₀ is false."],
+        ["Practical meaning", "Depends on effect size and uncertainty.", "Statistical significance alone does not imply importance."]
+      ],
+      notes: [
+        "p-value = P(data at least this extreme | H₀).",
+        "It is not P(H₀ | data).",
+        "Interpret it with effect size, interval estimates, and study design."
+      ]
+    };
+
+    let active = 0;
+
+    const elements = {
+      eyebrow: document.getElementById("eyebrow"),
+      title: document.getElementById("title"),
+      subtitle: document.getElementById("subtitle"),
+      overview: document.getElementById("overview"),
+      visualHeading: document.getElementById("visual-heading"),
+      visualHint: document.getElementById("visual-hint"),
+      diagram: document.getElementById("diagram"),
+      controls: document.getElementById("controls"),
+      currentSection: document.getElementById("current-section"),
+      currentHeading: document.getElementById("current-heading"),
+      currentTitle: document.querySelector("#current-title strong"),
+      currentText: document.getElementById("current-text"),
+      currentIndex: document.getElementById("current-index"),
+      walkthroughSection: document.getElementById("walkthrough-section"),
+      walkthroughHeading: document.getElementById("walkthrough-heading"),
+      walkthrough: document.getElementById("walkthrough"),
+      tradeoffsSection: document.getElementById("tradeoffs-section"),
+      tradeoffsHeading: document.getElementById("tradeoffs-heading"),
+      tradeoffsHead: document.getElementById("tradeoffs-head"),
+      tradeoffs: document.getElementById("tradeoffs"),
+      notesSection: document.getElementById("notes-section"),
+      notesHeading: document.getElementById("notes-heading"),
+      notes: document.getElementById("notes")
+    };
+
+    function render() {
+      const labels = model.labels || {};
+      const steps = Array.isArray(model.steps) ? model.steps : [];
+      const layout = model.layout === "flow" ? "flow" : "grid";
+      active = Math.min(active, Math.max(steps.length - 1, 0));
+
+      document.documentElement.lang = model.lang || "en";
+      document.title = model.title || "Visual Teacher";
+      elements.eyebrow.textContent = labels.eyebrow || "";
+      elements.title.textContent = model.title || "";
+      elements.subtitle.textContent = model.subtitle || "";
+      elements.visualHeading.textContent = labels.visualModel || "";
+      elements.visualHint.textContent = labels.visualHint || "";
+      elements.currentHeading.textContent = labels.currentItem || "";
+      elements.overview.hidden = steps.length === 0;
+      elements.diagram.dataset.layout = layout;
+      elements.diagram.dataset.density = steps.length > 4 ? "long" : "compact";
+      elements.diagram.style.setProperty("--diagram-template", flowTracks(steps));
+      elements.diagram.replaceChildren();
+      elements.controls.replaceChildren();
+      elements.controls.setAttribute("aria-label", labels.selectItem || "");
+
+      steps.forEach((step, index) => {
+        const node = document.createElement("div");
+        const nodeTitle = document.createElement("strong");
+        const nodeText = document.createElement("span");
+        node.className = "node" + (index === active ? " active" : "");
+        nodeTitle.textContent = layout === "flow" ? `${index + 1}. ${step.title}` : step.title;
+        nodeText.textContent = step.text;
+        node.append(nodeTitle, nodeText);
+        elements.diagram.appendChild(node);
+
+        if (layout === "flow" && index < steps.length - 1) {
+          const arrow = document.createElement("div");
+          arrow.className = "arrow";
+          arrow.setAttribute("aria-hidden", "true");
+          arrow.textContent = "→";
+          elements.diagram.appendChild(arrow);
+        }
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = layout === "flow" ? `${index + 1}. ${step.title}` : step.title;
+        button.setAttribute("aria-pressed", String(index === active));
+        button.addEventListener("click", () => {
+          active = index;
+          render();
+          elements.controls.children[index]?.focus();
+        });
+        elements.controls.appendChild(button);
+      });
+
+      elements.currentSection.hidden = steps.length === 0;
+      elements.controls.hidden = steps.length < 2;
+      elements.currentTitle.textContent = steps[active]?.title || "";
+      elements.currentText.textContent = steps[active]?.text || "";
+      elements.currentIndex.textContent = layout === "flow" && steps.length ? String(active + 1).padStart(2, "0") : "";
+
+      renderWalkthrough(labels, model.walkthrough);
+      renderTradeoffs(labels, model.tradeoffs);
+      renderNotes(labels, model.notes);
+    }
+
+    function renderWalkthrough(labels, items) {
+      const rows = Array.isArray(items) ? items : [];
+      elements.walkthroughSection.hidden = rows.length === 0;
+      elements.walkthroughHeading.textContent = labels.walkthrough || "";
+      elements.walkthrough.replaceChildren();
+
+      const list = document.createElement(model.layout === "flow" ? "ol" : "ul");
+      list.className = "walkthrough";
+
+      rows.forEach(item => {
+        const li = document.createElement("li");
+        const title = document.createElement("strong");
+        const text = document.createElement("span");
+        title.textContent = item.title;
+        text.textContent = item.text;
+        li.append(title, text);
+        list.appendChild(li);
+      });
+
+      elements.walkthrough.appendChild(list);
+    }
+
+    function renderTradeoffs(labels, rows) {
+      const tradeoffs = Array.isArray(rows) ? rows : [];
+      elements.tradeoffsSection.hidden = tradeoffs.length === 0;
+      elements.tradeoffsHeading.textContent = labels.tradeoffs || "";
+      elements.tradeoffsHead.replaceChildren();
+      elements.tradeoffs.replaceChildren();
+
+      [labels.point, labels.meaning, labels.watchOut].forEach(label => {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = label || "";
+        elements.tradeoffsHead.appendChild(th);
+      });
+
+      tradeoffs.forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(value => {
+          const td = document.createElement("td");
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        elements.tradeoffs.appendChild(tr);
+      });
+    }
+
+    function renderNotes(labels, notes) {
+      const items = Array.isArray(notes) ? notes : [];
+      elements.notesSection.hidden = items.length === 0;
+      elements.notesHeading.textContent = labels.paperNotes || "";
+      elements.notes.replaceChildren();
+
+      items.forEach(note => {
+        const li = document.createElement("li");
+        li.textContent = note;
+        elements.notes.appendChild(li);
+      });
+    }
+
+    function flowTracks(steps) {
+      const tracks = [];
+      steps.forEach((_, index) => {
+        tracks.push("minmax(0, 1fr)");
+        if (index < steps.length - 1) tracks.push("auto");
+      });
+      return tracks.join(" ") || "minmax(0, 1fr)";
+    }
+
+    render();
+  </script>
+</body>
+</html>

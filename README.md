@@ -4,11 +4,13 @@ Personal macOS dotfiles and bootstrap scripts.
 
 ## Structure
 
-- `Brewfile` - Homebrew packages and casks.
+- `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
+- `claude/` - Claude Code settings and custom skills.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
+- `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `iterm/` - exported iTerm profile JSON for manual import.
 - `macos/` - macOS defaults script for Finder, keyboard, screenshots, and Dock.
-- `vscode/` - VSCode settings, keybindings, and extension list.
+- `vscode/` - VSCode settings and keybindings.
 - `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.
 
 ## Install
@@ -19,7 +21,7 @@ Preview actions without changing the system:
 ./install.sh --dry-run
 ```
 
-Install Homebrew packages, create backups of existing config files, create symlinks, and install VSCode extensions:
+Install everything from the `Brewfile`, back up existing config files, and create symlinks:
 
 ```bash
 ./install.sh
@@ -33,14 +35,47 @@ Apply macOS defaults as well:
 
 The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` before replacing them with symlinks. This includes `.zshrc` and `.zprofile`.
 
+## Setup from scratch (new machine)
+
+1. `xcode-select --install`
+2. Install Homebrew:
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+3. Clone this repo:
+   ```bash
+   git clone https://github.com/Maksim-Burtsev/dotfiles.git ~/open-source/dotfiles
+   ```
+4. Preview, then install with macOS defaults:
+   ```bash
+   cd ~/open-source/dotfiles && ./install.sh --dry-run && ./install.sh --macos
+   ```
+5. Create `~/.zshrc.local` and `~/.gitconfig.local` with machine-local values (see **Local Values** below).
+6. iTerm: *Settings → Profiles → Other Actions → Import JSON Profiles* → `iterm/profile.json`.
+7. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
+8. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
+9. VSCode extensions are already installed by `brew bundle` - no extra step.
+
+## Keeping the repo current
+
+```bash
+./sync.sh
+```
+
+Regenerates the `Brewfile` from the current machine, restores the `~/.claude/settings.json` symlink if Claude Code overwrote it, and scans for secrets. Everything else is symlinked, so it needs no syncing. Run before committing.
+
 ## Local Values
 
-This repository stores public configuration only. Keep machine-local or sensitive values in files outside the repo, for example:
+This repository stores public configuration only. Keep machine-local or sensitive values outside the repo:
 
-- `~/.zshrc.local`
-- `~/.gitconfig.local`
+- `~/.zshrc.local` - sourced last by the tracked `.zshrc`. Registry tokens and per-machine `PATH` entries go here:
+  ```bash
+  export GITLAB_REGISTRY_ACCESS_TOKEN_NAME=...
+  export GITLAB_REGISTRY_ACCESS_TOKEN=...
+  export UV_INDEX_GITLAB_USERNAME="$GITLAB_REGISTRY_ACCESS_TOKEN_NAME"
+  export UV_INDEX_GITLAB_PASSWORD="$GITLAB_REGISTRY_ACCESS_TOKEN"
+  ```
+- `~/.gitconfig.local` - included by the tracked `.gitconfig`. Holds `url.*.insteadOf` entries with embedded credentials and `includeIf` blocks for work directories. The installer copies an existing untracked `~/.gitconfig` here automatically, with mode 600.
 - local `.env` files
 
-Before installing, move any sensitive or machine-local shell values from `~/.zshrc` into `~/.zshrc.local`. The tracked `.zshrc` loads that file last.
-
-The `.gitignore` is configured to keep common local credential files and key material out of Git.
+A `gitleaks` pre-commit hook scans staged content and blocks the commit if it finds a secret. It is enabled by `install.sh` via `core.hooksPath` - hooks are not carried over by `git clone`, so a fresh clone needs the installer to run once. The `.gitignore` only filters *filenames*; the hook is what actually inspects file contents.

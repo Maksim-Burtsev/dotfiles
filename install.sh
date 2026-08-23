@@ -5,15 +5,18 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_ROOT="${HOME}/.dotfiles-backups/$(date +%Y%m%d-%H%M%S)"
 DRY_RUN=0
 RUN_MACOS=0
+SKIP_BREW=0
 
 usage() {
   cat <<USAGE
-Usage: ./install.sh [--dry-run] [--macos] [--help]
+Usage: ./install.sh [--dry-run] [--macos] [--skip-brew] [--help]
 
 Options:
-  --dry-run  Print actions without changing files, packages, or settings.
-  --macos    Also apply macOS defaults from macos/defaults.sh.
-  --help     Show this help message.
+  --dry-run    Print actions without changing files, packages, or settings.
+  --macos      Also apply macOS defaults from macos/defaults.sh.
+  --skip-brew  Skip brew bundle. Useful when packages are already installed and
+               some apps live in /Applications outside of brew's control.
+  --help       Show this help message.
 USAGE
 }
 
@@ -33,6 +36,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     --macos)
       RUN_MACOS=1
+      ;;
+    --skip-brew)
+      SKIP_BREW=1
       ;;
     --help|-h)
       usage
@@ -54,6 +60,11 @@ run_or_print() {
 }
 
 install_homebrew_packages() {
+  if [[ "$SKIP_BREW" -eq 1 ]]; then
+    log "Skipping brew bundle (--skip-brew)."
+    return
+  fi
+
   if [[ "$DRY_RUN" -eq 1 ]]; then
     log "DRY-RUN: brew bundle install --file $DOTFILES_DIR/Brewfile --no-upgrade"
     return
@@ -138,22 +149,13 @@ link_dotfiles() {
   if [[ -d "$DOTFILES_DIR/vscode/snippets" ]]; then
     link_file "$DOTFILES_DIR/vscode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
   fi
-}
 
-install_vscode_extensions() {
-  local extensions_file="$DOTFILES_DIR/vscode/extensions.txt"
+  link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+  link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
+  link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
 
-  [[ -f "$extensions_file" ]] || return
-
-  if [[ "$DRY_RUN" -eq 0 ]] && ! command -v code >/dev/null 2>&1; then
-    log "WARN: VSCode 'code' CLI is not installed; skipping extensions."
-    return
-  fi
-
-  while IFS= read -r extension || [[ -n "$extension" ]]; do
-    [[ -n "$extension" ]] || continue
-    run_or_print code --install-extension "$extension"
-  done < "$extensions_file"
+  # Хуки не переносятся при clone, поэтому включает их установщик.
+  run_or_print git -C "$DOTFILES_DIR" config core.hooksPath .githooks
 }
 
 apply_macos_defaults() {
@@ -171,5 +173,4 @@ apply_macos_defaults() {
 
 install_homebrew_packages
 link_dotfiles
-install_vscode_extensions
 apply_macos_defaults

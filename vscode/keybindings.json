@@ -20,7 +20,7 @@
         },
         "when": "editorTextFocus"
     },
-
+    
     {
         "key": "cmd+o",
         "command": "workbench.action.files.openFile",
