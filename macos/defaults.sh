@@ -32,23 +32,29 @@ defaults write com.apple.screencapture location -string "$screenshots_dir"
 defaults write com.apple.screencapture type -string "png"
 defaults write com.apple.screencapture disable-shadow -bool false
 
-# Cmd+Shift+S снимает выделенную область в файл вместо дефолтного Cmd+Shift+4.
-# 30 — id хоткея "Save picture of selected area as a file".
-# parameters = (ascii 's', keycode S, маска модификаторов): 1179648 = shift 131072 + cmd 1048576.
-defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 30 '
-  <dict>
-    <key>enabled</key><true/>
-    <key>value</key>
+# Снимок выделенной области: 30 — сохранить в файл, 31 — скопировать в буфер.
+# Это два независимых действия, у каждого своя привязка.
+# parameters = (ascii, keycode, маска модификаторов); 1179648 = shift 131072 + cmd 1048576.
+set_symbolic_hotkey() {
+  local id="$1" ascii="$2" keycode="$3" modifiers="$4"
+  defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" "
     <dict>
-      <key>parameters</key>
-      <array>
-        <integer>115</integer>
-        <integer>1</integer>
-        <integer>1179648</integer>
-      </array>
-      <key>type</key><string>standard</string>
-    </dict>
-  </dict>'
+      <key>enabled</key><true/>
+      <key>value</key>
+      <dict>
+        <key>parameters</key>
+        <array>
+          <integer>${ascii}</integer>
+          <integer>${keycode}</integer>
+          <integer>${modifiers}</integer>
+        </array>
+        <key>type</key><string>standard</string>
+      </dict>
+    </dict>"
+}
+
+set_symbolic_hotkey 30 52 21 1179648   # Cmd+Shift+4 -> файл (дефолт macOS)
+set_symbolic_hotkey 31 115 1 1179648   # Cmd+Shift+S -> буфер обмена
 
 # Sound
 # У звука затвора нет отдельного выключателя — он идёт в общем наборе звуков
