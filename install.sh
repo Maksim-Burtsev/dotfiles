@@ -5,15 +5,18 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_ROOT="${HOME}/.dotfiles-backups/$(date +%Y%m%d-%H%M%S)"
 DRY_RUN=0
 RUN_MACOS=0
+RUN_POWER=0
 SKIP_BREW=0
 
 usage() {
   cat <<USAGE
-Usage: ./install.sh [--dry-run] [--macos] [--skip-brew] [--help]
+Usage: ./install.sh [--dry-run] [--macos] [--power] [--skip-brew] [--help]
 
 Options:
   --dry-run    Print actions without changing files, packages, or settings.
   --macos      Also apply macOS defaults from macos/defaults.sh.
+  --power      Also apply sleep timers and screen lock from macos/power.sh.
+               Interactive: asks for the sudo and the login password.
   --skip-brew  Skip brew bundle. Useful when packages are already installed and
                some apps live in /Applications outside of brew's control.
   --help       Show this help message.
@@ -36,6 +39,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     --macos)
       RUN_MACOS=1
+      ;;
+    --power)
+      RUN_POWER=1
       ;;
     --skip-brew)
       SKIP_BREW=1
@@ -189,7 +195,21 @@ apply_macos_defaults() {
   fi
 }
 
+apply_power_settings() {
+  if [[ "$RUN_POWER" -eq 0 ]]; then
+    log "Skipping power settings. Re-run with --power to apply them."
+    return
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "DRY-RUN: bash $DOTFILES_DIR/macos/power.sh"
+  else
+    bash "$DOTFILES_DIR/macos/power.sh"
+  fi
+}
+
 install_homebrew_packages
 install_oh_my_zsh
 link_dotfiles
 apply_macos_defaults
+apply_power_settings
