@@ -9,7 +9,7 @@ Personal macOS dotfiles and bootstrap scripts.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `iterm/` - exported iTerm profile JSON for manual import.
-- `macos/` - macOS defaults script for Finder, keyboard, screenshots, and Dock.
+- `macos/` - macOS defaults script for appearance, menu bar, Finder, keyboard, screenshots, and Dock.
 - `vscode/` - VSCode settings and keybindings.
 - `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.
 
