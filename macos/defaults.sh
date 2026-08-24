@@ -9,6 +9,7 @@ defaults write NSGlobalDomain AppleHighlightColor -string "0.847059 0.847059 0.8
 # Menu bar
 # Строка меню выезжает только когда курсор упирается в верх экрана, как Dock.
 defaults write NSGlobalDomain _HIHideMenuBar -bool true
+defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool false
 
 # Finder
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
