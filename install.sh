@@ -74,6 +74,24 @@ install_homebrew_packages() {
   brew bundle install --file "$DOTFILES_DIR/Brewfile" --no-upgrade
 }
 
+install_oh_my_zsh() {
+  if [[ -d "${HOME}/.oh-my-zsh" ]]; then
+    log "OK: oh-my-zsh already installed"
+    return
+  fi
+
+  # Трекнутый .zshrc требует oh-my-zsh, а brew его не ставит.
+  # KEEP_ZSHRC, чтобы установщик не трогал наш файл/симлинк.
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "DRY-RUN: install oh-my-zsh (RUNZSH=no CHSH=no KEEP_ZSHRC=yes)"
+    return
+  fi
+
+  command -v curl >/dev/null 2>&1 || die "curl is required to install oh-my-zsh"
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
 backup_path_for() {
   local target="$1"
   local relative="${target#"$HOME"/}"
@@ -172,5 +190,6 @@ apply_macos_defaults() {
 }
 
 install_homebrew_packages
+install_oh_my_zsh
 link_dotfiles
 apply_macos_defaults
