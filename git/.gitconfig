@@ -2,6 +2,13 @@
 	name = Maksim Burtsev
 	email = zadrot-lol@list.ru
 
+# Пуш по HTTPS берёт токен из gh, поэтому на новой машине хватает `gh auth login`.
+[credential "https://github.com"]
+	helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper = !gh auth git-credential
+
 [include]
 	path = ~/.gitconfig.local
 
