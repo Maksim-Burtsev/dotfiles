@@ -9,7 +9,7 @@ Personal macOS dotfiles and bootstrap scripts.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `iterm/` - exported iTerm profile JSON for manual import.
-- `macos/` - macOS defaults script for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control.
+- `macos/` - `defaults.sh` for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control. `power.sh` for sleep timers and the lock screen; it is separate because it needs `sudo` and the login password.
 - `vscode/` - VSCode settings and keybindings.
 - `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.
 
@@ -31,6 +31,12 @@ Apply macOS defaults as well:
 
 ```bash
 ./install.sh --macos
+```
+
+Sleep timers and the lock screen are behind their own flag, because that step is interactive - `pmset` asks for `sudo` and `sysadminctl` asks for the login password:
+
+```bash
+./install.sh --power
 ```
 
 The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` before replacing them with symlinks. This includes `.zshrc` and `.zprofile`.
@@ -55,6 +61,10 @@ It also installs `oh-my-zsh` when `~/.oh-my-zsh` is missing - the tracked `.zshr
 5. Preview, then install with macOS defaults:
    ```bash
    cd ~/open-source/dotfiles && ./install.sh --dry-run && ./install.sh --macos
+   ```
+   Then apply the power settings - kept separate because they prompt for passwords:
+   ```bash
+   ./install.sh --power
    ```
 6. Optional: `$(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc` - creates the `~/.fzf.zsh` that `.zshrc` sources.
 7. Create `~/.zshrc.local` and `~/.gitconfig.local` with machine-local values (see **Local Values** below).
