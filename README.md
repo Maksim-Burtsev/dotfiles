@@ -35,6 +35,8 @@ Apply macOS defaults as well:
 
 The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` before replacing them with symlinks. This includes `.zshrc` and `.zprofile`.
 
+It also installs `oh-my-zsh` when `~/.oh-my-zsh` is missing - the tracked `.zshrc` sources it, and Homebrew does not ship it.
+
 ## Setup from scratch (new machine)
 
 1. `xcode-select --install`
@@ -46,15 +48,20 @@ The installer backs up existing files into `~/.dotfiles-backups/<timestamp>/` be
    ```bash
    git clone https://github.com/Maksim-Burtsev/dotfiles.git ~/open-source/dotfiles
    ```
-4. Preview, then install with macOS defaults:
+4. Adopt any app that is already installed outside of brew, otherwise `brew bundle` aborts on "There is already an App at ...":
+   ```bash
+   brew install --cask --adopt <name>
+   ```
+5. Preview, then install with macOS defaults:
    ```bash
    cd ~/open-source/dotfiles && ./install.sh --dry-run && ./install.sh --macos
    ```
-5. Create `~/.zshrc.local` and `~/.gitconfig.local` with machine-local values (see **Local Values** below).
-6. iTerm: *Settings → Profiles → Other Actions → Import JSON Profiles* → `iterm/profile.json`.
-7. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
-8. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
-9. VSCode extensions are already installed by `brew bundle` - no extra step.
+6. Optional: `$(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc` - creates the `~/.fzf.zsh` that `.zshrc` sources.
+7. Create `~/.zshrc.local` and `~/.gitconfig.local` with machine-local values (see **Local Values** below).
+8. iTerm: *Settings → Profiles → Other Actions → Import JSON Profiles* → `iterm/profile.json`.
+9. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
+10. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
+11. VSCode extensions are already installed by `brew bundle` - no extra step.
 
 ## Keeping the repo current
 
