@@ -50,6 +50,11 @@ defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 30 '
     </dict>
   </dict>'
 
+# Sound
+# У звука затвора нет отдельного выключателя — он идёт в общем наборе звуков
+# интерфейса ("Play user interface sound effects"), поэтому глушим набор целиком.
+defaults write com.apple.systemsound "com.apple.sound.uiaudio.enabled" -int 0
+
 # Dock
 defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock orientation -string "left"
