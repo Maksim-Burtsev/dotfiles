@@ -26,6 +26,14 @@ defaults write com.apple.finder CreateDesktop -bool false
 defaults write NSGlobalDomain InitialKeyRepeat -int 30
 defaults write NSGlobalDomain KeyRepeat -int 5
 
+# Раскладки: ABC + «Русская — ПК» (RussianWin, id 19458). У эппловской "Russian"
+# пунктуация разложена не по-PC — запятой и вопроса нет на привычных местах.
+# HIToolbox кэширует список, так что применится только после перелогина.
+defaults write com.apple.HIToolbox AppleEnabledInputSources -array \
+  '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>252</integer><key>KeyboardLayout Name</key><string>ABC</string></dict>' \
+  '<dict><key>Bundle ID</key><string>com.apple.CharacterPaletteIM</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
+  '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>19458</integer><key>KeyboardLayout Name</key><string>RussianWin</string></dict>'
+
 # Screenshots
 screenshots_dir="${HOME}/Pictures/Screenshots"
 mkdir -p "$screenshots_dir"

@@ -3,10 +3,16 @@
 	email = zadrot-lol@list.ru
 
 # Пуш по HTTPS берёт токен из gh, поэтому на новой машине хватает `gh auth login`.
+# Пустой helper обнуляет цепочку, унаследованную из системного gitconfig: иначе
+# первым опрашивается osxkeychain, просит пароль от связки ключей и до gh дело
+# не доходит. Сброс действует только на github.com, у остальных хостов
+# osxkeychain продолжает работать.
 [credential "https://github.com"]
+	helper =
 	helper = !gh auth git-credential
 
 [credential "https://gist.github.com"]
+	helper =
 	helper = !gh auth git-credential
 
 [include]
