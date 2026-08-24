@@ -72,6 +72,11 @@ defaults write com.apple.dock mineffect -string "scale"
 defaults write com.apple.dock minimize-to-application -bool false
 defaults write com.apple.dock mru-spaces -bool true
 
+# Mission Control
+# Cmd+Tab делает приложение активным, но не утаскивает на его Space: переход
+# между столами остаётся явным — клик по иконке в Dock, Spotlight, Ctrl+←/→.
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
+
 # Без этого перечитывания хоткей заработает только после перелогина.
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 
