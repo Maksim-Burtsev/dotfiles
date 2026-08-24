@@ -83,6 +83,10 @@ defaults write com.apple.dock mru-spaces -bool true
 # Mission Control
 # Cmd+Tab делает приложение активным, но не утаскивает на его Space: переход
 # между столами остаётся явным — клик по иконке в Dock, Spotlight, Ctrl+←/→.
+# Живой сессией не подхватывается даже после killall Dock: значение читается при
+# входе в систему. Либо перелогиниться, либо дёрнуть тумблер руками в
+# System Settings -> Desktop & Dock -> Mission Control ("When switching to an
+# application, switch to a Space with open windows for the application").
 defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
 
 # Без этого перечитывания хоткей заработает только после перелогина.
