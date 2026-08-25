@@ -1,0 +1,637 @@
+#!/usr/bin/env python3
+"""mailctl - IMAP-доступ к почтовым ящикам для агентов и для рук.
+
+Конфиг: ~/.config/mailctl/accounts.toml (адреса и хосты, без паролей).
+Пароли: Keychain, сервис "mailctl", аккаунт - имя ящика из конфига.
+
+Вывод всех команд - JSON в stdout, ошибки - в stderr с ненулевым кодом.
+Отправки писем здесь нет намеренно: команда draft кладёт письмо в Черновики,
+отправляет человек.
+"""
+
+import argparse
+import base64
+import email
+import email.policy
+import imaplib
+import json
+import os
+import re
+import subprocess
+import sys
+import tomllib
+from email.header import decode_header, make_header
+from email.message import EmailMessage
+from html.parser import HTMLParser
+from pathlib import Path
+
+CONFIG_PATH = Path(os.environ.get("MAILCTL_CONFIG", Path.home() / ".config/mailctl/accounts.toml"))
+KEYCHAIN_SERVICE = "mailctl"
+
+# Псевдонимы служебных папок -> флаг SPECIAL-USE. Имена у провайдеров разные
+# ("Корзина" у mail.ru, "[Gmail]/Trash" у Gmail), поэтому спрашиваем сервер.
+# Псевдоним -> флаги SPECIAL-USE, которыми его может помечать сервер.
+# mail.ru вешает на спам нестандартный \\Spam вместо \\Junk, а на архив -
+# вообще ничего, поэтому вариантов по нескольку и есть откат на имя папки.
+SPECIAL_ALIASES = {
+    "sent": ("\\Sent",),
+    "drafts": ("\\Drafts",),
+    "trash": ("\\Trash",),
+    "spam": ("\\Junk", "\\Spam"),
+    "junk": ("\\Junk", "\\Spam"),
+    "archive": ("\\Archive", "\\All"),
+}
+
+
+class MailctlError(Exception):
+    pass
+
+
+# --- modified UTF-7 (RFC 3501) -------------------------------------------
+# Имена папок ездят по IMAP в собственной кодировке, в stdlib её нет.
+
+def _b64(chunk):
+    return base64.b64encode(chunk.encode("utf-16-be")).decode("ascii").rstrip("=").replace("/", ",")
+
+
+def utf7_encode(name):
+    out, buf = [], []
+    for ch in name:
+        if 0x20 <= ord(ch) <= 0x7E:
+            if buf:
+                out.append("&" + _b64("".join(buf)) + "-")
+                buf = []
+            out.append("&-" if ch == "&" else ch)
+        else:
+            buf.append(ch)
+    if buf:
+        out.append("&" + _b64("".join(buf)) + "-")
+    return "".join(out)
+
+
+def utf7_decode(name):
+    if isinstance(name, bytes):
+        name = name.decode("ascii", "replace")
+    out, i = [], 0
+    while i < len(name):
+        if name[i] == "&":
+            end = name.find("-", i)
+            if end == -1:
+                end = len(name)
+            chunk = name[i + 1:end]
+            if chunk == "":
+                out.append("&")
+            else:
+                padded = chunk.replace(",", "/")
+                padded += "=" * (-len(padded) % 4)
+                try:
+                    out.append(base64.b64decode(padded).decode("utf-16-be"))
+                except Exception:
+                    out.append("&" + chunk + "-")
+            i = end + 1
+        else:
+            out.append(name[i])
+            i += 1
+    return "".join(out)
+
+
+# --- конфиг и пароли ------------------------------------------------------
+
+def load_accounts():
+    if not CONFIG_PATH.exists():
+        raise MailctlError(
+            f"нет конфига {CONFIG_PATH}. Создайте его: см. mailctl check --help"
+        )
+    with CONFIG_PATH.open("rb") as fh:
+        data = tomllib.load(fh)
+    accounts = data.get("accounts") or {}
+    if not accounts:
+        raise MailctlError(f"в {CONFIG_PATH} нет ни одного [accounts.<имя>]")
+    return accounts
+
+
+def pick_account(accounts, name):
+    if name:
+        if name not in accounts:
+            raise MailctlError(f"ящик {name!r} не найден. Есть: {', '.join(sorted(accounts))}")
+        return name, accounts[name]
+    defaults = [k for k, v in accounts.items() if v.get("default")]
+    if len(defaults) == 1:
+        return defaults[0], accounts[defaults[0]]
+    if len(accounts) == 1:
+        only = next(iter(accounts))
+        return only, accounts[only]
+    raise MailctlError("несколько ящиков и ни одного default - укажите --account")
+
+
+def keychain_password(name):
+    result = subprocess.run(
+        ["security", "find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", name, "-w"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise MailctlError(
+            f"в Keychain нет пароля для {name!r}. Добавьте:\n"
+            f"  security add-generic-password -s {KEYCHAIN_SERVICE} -a {name} -w"
+        )
+    return result.stdout.rstrip("\n")
+
+
+# --- соединение -----------------------------------------------------------
+
+class Mailbox:
+    def __init__(self, name, cfg):
+        self.name = name
+        self.cfg = cfg
+        self.conn = None
+        self._folders = None
+        self._selected = None
+
+    def __enter__(self):
+        host = self.cfg.get("imap_host")
+        if not host:
+            raise MailctlError(f"у ящика {self.name!r} не задан imap_host")
+        port = int(self.cfg.get("imap_port", 993))
+        address = self.cfg.get("address") or self.name
+        self.conn = imaplib.IMAP4_SSL(host, port)
+        try:
+            self.conn.login(address, keychain_password(self.name))
+        except imaplib.IMAP4.error as exc:
+            detail = exc.args[0]
+            if isinstance(detail, bytes):
+                detail = detail.decode("utf-8", "replace")
+            raise MailctlError(
+                f"{host} отклонил логин для {address}: {detail}\n"
+                "Обычный пароль от ящика тут не подойдёт - нужен пароль для внешних приложений."
+            ) from None
+        return self
+
+    def __exit__(self, *exc):
+        if self.conn is not None:
+            try:
+                self.conn.logout()
+            except Exception:
+                pass
+        return False
+
+    def folders(self):
+        if self._folders is None:
+            ok, lines = self.conn.list()
+            if ok != "OK":
+                raise MailctlError("сервер не отдал список папок")
+            parsed = []
+            for line in lines:
+                if isinstance(line, tuple):
+                    line = b" ".join(part for part in line if isinstance(part, bytes))
+                text = line.decode("ascii", "replace")
+                match = re.match(r'\((?P<flags>[^)]*)\)\s+(?P<delim>"[^"]*"|NIL)\s+(?P<name>.*)', text)
+                if not match:
+                    continue
+                raw = match.group("name").strip()
+                if raw.startswith('"') and raw.endswith('"'):
+                    raw = raw[1:-1]
+                parsed.append({
+                    "raw": raw,
+                    "name": utf7_decode(raw),
+                    "flags": match.group("flags").split(),
+                })
+            self._folders = parsed
+        return self._folders
+
+    def resolve(self, folder):
+        """Псевдоним или человекочитаемое имя -> имя в кодировке сервера."""
+        if not folder:
+            return "INBOX"
+        key = folder.strip().lower()
+        if key == "inbox":
+            return "INBOX"
+        if key in SPECIAL_ALIASES:
+            wanted = {f.lower() for f in SPECIAL_ALIASES[key]}
+            for item in self.folders():
+                if wanted & {f.lower() for f in item["flags"]}:
+                    return item["raw"]
+            # Флага нет - пробуем найти папку по имени тем же псевдонимом.
+        for item in self.folders():
+            if item["name"].lower() == key or item["raw"].lower() == key:
+                return item["raw"]
+        return utf7_encode(folder)
+
+    def select(self, folder, readonly=True):
+        raw = self.resolve(folder)
+        ok, _ = self.conn.select(f'"{raw}"', readonly=readonly)
+        if ok != "OK":
+            raise MailctlError(f"не открылась папка {folder!r}")
+        self._selected = raw
+        return raw
+
+    def search(self, criteria, literal=None):
+        if literal is not None:
+            self.conn.literal = literal
+        ok, data = self.conn.uid("SEARCH", *criteria)
+        if ok != "OK":
+            raise MailctlError(f"поиск не удался: {data!r}")
+        return data[0].split() if data and data[0] else []
+
+    def has(self, capability):
+        return capability.upper() in (self.conn.capabilities or ())
+
+
+# --- разбор писем ---------------------------------------------------------
+
+def decode_field(value):
+    if not value:
+        return ""
+    try:
+        return str(make_header(decode_header(value)))
+    except Exception:
+        return value
+
+
+# Рассылки набивают preheader невидимыми распорками (U+2800, U+200C, nbsp);
+# без них тело письма короче в разы и в лимит символов влезает смысл.
+INVISIBLE_RE = re.compile("[ \t\xa0\u200b-\u200d\u2060\u2800\ufeff]+")
+
+
+class _Detagger(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+        self.skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style", "head"):
+            self.skip += 1
+        elif tag in ("p", "br", "div", "tr", "li", "h1", "h2", "h3"):
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style", "head") and self.skip:
+            self.skip -= 1
+
+    def handle_data(self, data):
+        if not self.skip:
+            self.parts.append(data)
+
+    def text(self):
+        # Вёрстка рассылок даёт десятки пустых строк подряд: схлопываем
+        # их в одну, иначе тело письма нечитаемо и жрёт лимит символов.
+        lines = [re.sub(INVISIBLE_RE, " ", line).strip()
+                 for line in "".join(self.parts).splitlines()]
+        out, blank = [], False
+        for line in lines:
+            if line:
+                out.append(line)
+                blank = False
+            elif not blank:
+                out.append("")
+                blank = True
+        return "\n".join(out).strip()
+
+
+def html_to_text(html):
+    parser = _Detagger()
+    try:
+        parser.feed(html)
+        parser.close()
+    except Exception:
+        return html
+    return parser.text()
+
+
+HEADER_FIELDS = "(FROM TO CC SUBJECT DATE MESSAGE-ID)"
+
+
+def summarize(uid, flags, headers_bytes, size=None):
+    msg = email.message_from_bytes(headers_bytes, policy=email.policy.default)
+    return {
+        "uid": uid,
+        "from": decode_field(msg.get("From")),
+        "to": decode_field(msg.get("To")),
+        "cc": decode_field(msg.get("Cc")),
+        "subject": decode_field(msg.get("Subject")),
+        "date": msg.get("Date"),
+        "message_id": msg.get("Message-ID"),
+        "unread": "\\Seen" not in flags,
+        "flags": flags,
+        "size": size,
+    }
+
+
+FLAGS_RE = re.compile(r"FLAGS \(([^)]*)\)")
+SIZE_RE = re.compile(r"RFC822\.SIZE (\d+)")
+UID_RE = re.compile(r"UID (\d+)")
+
+
+def fetch_summaries(box, uids):
+    if not uids:
+        return []
+    uid_set = b",".join(uids)
+    ok, data = box.conn.uid(
+        "FETCH", uid_set, f"(UID FLAGS RFC822.SIZE BODY.PEEK[HEADER.FIELDS {HEADER_FIELDS}])"
+    )
+    if ok != "OK":
+        raise MailctlError(f"не удалось прочитать заголовки: {data!r}")
+    out = []
+    for item in data:
+        if not isinstance(item, tuple):
+            continue
+        meta = item[0].decode("ascii", "replace")
+        uid_match = UID_RE.search(meta)
+        if not uid_match:
+            continue
+        flags = FLAGS_RE.search(meta)
+        size = SIZE_RE.search(meta)
+        out.append(summarize(
+            int(uid_match.group(1)),
+            flags.group(1).split() if flags else [],
+            item[1],
+            int(size.group(1)) if size else None,
+        ))
+    out.sort(key=lambda m: m["uid"], reverse=True)
+    return out
+
+
+def extract_body(msg, max_chars):
+    text, html, attachments = None, None, []
+    for part in msg.walk():
+        if part.get_content_maintype() == "multipart":
+            continue
+        disposition = (part.get_content_disposition() or "").lower()
+        filename = part.get_filename()
+        if disposition == "attachment" or (filename and part.get_content_maintype() != "text"):
+            payload = part.get_payload(decode=True) or b""
+            attachments.append({
+                "filename": decode_field(filename) or "(без имени)",
+                "content_type": part.get_content_type(),
+                "size": len(payload),
+            })
+            continue
+        try:
+            content = part.get_content()
+        except Exception:
+            payload = part.get_payload(decode=True) or b""
+            content = payload.decode(part.get_content_charset() or "utf-8", "replace")
+        if part.get_content_type() == "text/plain" and text is None:
+            text = content
+        elif part.get_content_type() == "text/html" and html is None:
+            html = content
+    body = text if text is not None else (html_to_text(html) if html else "")
+    body = body.strip()
+    truncated = False
+    if max_chars and len(body) > max_chars:
+        body = body[:max_chars]
+        truncated = True
+    return body, truncated, attachments
+
+
+# --- построение критериев поиска -----------------------------------------
+
+def build_criteria(args):
+    """Возвращает (criteria, literal). Литерал в imaplib только один,
+    поэтому не-ASCII допускается ровно в одном условии."""
+    criteria, non_ascii = [], []
+    if args.unread:
+        criteria.append("UNSEEN")
+    if args.since:
+        criteria += ["SINCE", args.since]
+    if args.before:
+        criteria += ["BEFORE", args.before]
+    for key, value in (("FROM", args.sender), ("SUBJECT", args.subject), ("TEXT", args.search)):
+        if not value:
+            continue
+        if value.isascii():
+            criteria += [key, f'"{value}"']
+        else:
+            non_ascii.append((key, value))
+    if len(non_ascii) > 1:
+        raise MailctlError("не-ASCII допускается только в одном условии поиска за раз")
+    if not criteria and not non_ascii:
+        return ["ALL"], None
+    if non_ascii:
+        key, value = non_ascii[0]
+        return ["CHARSET", "UTF-8", *criteria, key], value.encode("utf-8")
+    return criteria, None
+
+
+# --- команды --------------------------------------------------------------
+
+def cmd_accounts(args):
+    accounts = load_accounts()
+    out = []
+    for name, cfg in sorted(accounts.items()):
+        out.append({
+            "account": name,
+            "address": cfg.get("address"),
+            "imap_host": cfg.get("imap_host"),
+            "default": bool(cfg.get("default")),
+        })
+    return out
+
+
+def cmd_check(args):
+    accounts = load_accounts()
+    names = [args.account] if args.account else sorted(accounts)
+    report = []
+    for name in names:
+        entry = {"account": name, "address": accounts[name].get("address")}
+        try:
+            with Mailbox(name, accounts[name]) as box:
+                box.select("inbox")
+                entry["status"] = "ok"
+                entry["folders"] = len(box.folders())
+        except MailctlError as exc:
+            entry["status"] = "error"
+            entry["error"] = str(exc)
+        report.append(entry)
+    return report
+
+
+def cmd_folders(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    with Mailbox(name, cfg) as box:
+        return [{"name": f["name"], "flags": f["flags"]} for f in box.folders()]
+
+
+def cmd_list(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    with Mailbox(name, cfg) as box:
+        box.select(args.folder)
+        criteria, literal = build_criteria(args)
+        uids = box.search(criteria, literal)
+        total = len(uids)
+        uids = uids[-args.limit:] if args.limit else uids
+        messages = fetch_summaries(box, uids)
+        return {"account": name, "folder": args.folder, "matched": total, "messages": messages}
+
+
+def cmd_read(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    with Mailbox(name, cfg) as box:
+        box.select(args.folder, readonly=not args.mark_read)
+        ok, data = box.conn.uid("FETCH", str(args.uid), "(BODY.PEEK[])")
+        if ok != "OK" or not data or not isinstance(data[0], tuple):
+            raise MailctlError(f"письмо uid={args.uid} не найдено в {args.folder!r}")
+        msg = email.message_from_bytes(data[0][1], policy=email.policy.default)
+        body, truncated, attachments = extract_body(msg, args.max_chars)
+        if args.mark_read:
+            box.conn.uid("STORE", str(args.uid), "+FLAGS", "(\\Seen)")
+        return {
+            "account": name,
+            "folder": args.folder,
+            "uid": args.uid,
+            "from": decode_field(msg.get("From")),
+            "to": decode_field(msg.get("To")),
+            "cc": decode_field(msg.get("Cc")),
+            "subject": decode_field(msg.get("Subject")),
+            "date": msg.get("Date"),
+            "message_id": msg.get("Message-ID"),
+            "body": body,
+            "body_truncated": truncated,
+            "attachments": attachments,
+        }
+
+
+def cmd_move(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    uids = ",".join(str(u) for u in args.uids)
+    with Mailbox(name, cfg) as box:
+        box.select(args.folder, readonly=False)
+        dest = box.resolve(args.to)
+        if box.has("MOVE"):
+            ok, data = box.conn.uid("MOVE", uids, f'"{dest}"')
+        else:
+            ok, data = box.conn.uid("COPY", uids, f'"{dest}"')
+            if ok == "OK":
+                box.conn.uid("STORE", uids, "+FLAGS", "(\\Deleted)")
+                box.conn.expunge()
+        if ok != "OK":
+            raise MailctlError(f"перенос не удался: {data!r}")
+        return {"account": name, "moved": args.uids, "from": args.folder, "to": args.to}
+
+
+def cmd_flag(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    uids = ",".join(str(u) for u in args.uids)
+    ops = []
+    if args.read:
+        ops.append(("+FLAGS", "(\\Seen)"))
+    if args.unread:
+        ops.append(("-FLAGS", "(\\Seen)"))
+    if args.star:
+        ops.append(("+FLAGS", "(\\Flagged)"))
+    if args.unstar:
+        ops.append(("-FLAGS", "(\\Flagged)"))
+    if not ops:
+        raise MailctlError("укажите хотя бы один флаг: --read/--unread/--star/--unstar")
+    with Mailbox(name, cfg) as box:
+        box.select(args.folder, readonly=False)
+        for mode, flag in ops:
+            ok, data = box.conn.uid("STORE", uids, mode, flag)
+            if ok != "OK":
+                raise MailctlError(f"не удалось выставить {flag}: {data!r}")
+    return {"account": name, "uids": args.uids, "applied": [f"{m} {f}" for m, f in ops]}
+
+
+def cmd_draft(args):
+    accounts = load_accounts()
+    name, cfg = pick_account(accounts, args.account)
+    body = args.body
+    if body == "-":
+        body = sys.stdin.read()
+    msg = EmailMessage()
+    msg["From"] = cfg.get("address") or name
+    msg["To"] = args.to
+    if args.cc:
+        msg["Cc"] = args.cc
+    msg["Subject"] = args.subject
+    if args.in_reply_to:
+        msg["In-Reply-To"] = args.in_reply_to
+        msg["References"] = args.in_reply_to
+    msg.set_content(body)
+    with Mailbox(name, cfg) as box:
+        dest = box.resolve("drafts")
+        ok, data = box.conn.append(f'"{dest}"', "(\\Draft)", None, msg.as_bytes())
+        if ok != "OK":
+            raise MailctlError(f"черновик не сохранился: {data!r}")
+    return {"account": name, "folder": utf7_decode(dest), "to": args.to, "subject": args.subject,
+            "note": "черновик сохранён, отправляет человек"}
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="mailctl", description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("-a", "--account", help="имя ящика из конфига")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("accounts", help="перечислить настроенные ящики").set_defaults(func=cmd_accounts)
+    sub.add_parser("check", help="проверить конфиг, Keychain и логин").set_defaults(func=cmd_check)
+    sub.add_parser("folders", help="список папок").set_defaults(func=cmd_folders)
+
+    p_list = sub.add_parser("list", help="письма в папке")
+    p_list.add_argument("-f", "--folder", default="inbox")
+    p_list.add_argument("-n", "--limit", type=int, default=20, help="сколько последних, 0 - все")
+    p_list.add_argument("--unread", action="store_true")
+    p_list.add_argument("--since", help="дата вида 01-Jan-2026")
+    p_list.add_argument("--before", help="дата вида 01-Jan-2026")
+    p_list.add_argument("--from", dest="sender")
+    p_list.add_argument("--subject")
+    p_list.add_argument("--search", help="поиск по всему письму")
+    p_list.set_defaults(func=cmd_list)
+
+    p_read = sub.add_parser("read", help="полный текст письма")
+    p_read.add_argument("uid", type=int)
+    p_read.add_argument("-f", "--folder", default="inbox")
+    p_read.add_argument("--max-chars", type=int, default=20000)
+    p_read.add_argument("--mark-read", action="store_true")
+    p_read.set_defaults(func=cmd_read)
+
+    p_move = sub.add_parser("move", help="перенести письма в другую папку")
+    p_move.add_argument("uids", type=int, nargs="+")
+    p_move.add_argument("--to", required=True, help="папка или псевдоним (trash, spam, archive)")
+    p_move.add_argument("-f", "--folder", default="inbox")
+    p_move.set_defaults(func=cmd_move)
+
+    p_flag = sub.add_parser("flag", help="пометить прочитанным/важным")
+    p_flag.add_argument("uids", type=int, nargs="+")
+    p_flag.add_argument("-f", "--folder", default="inbox")
+    p_flag.add_argument("--read", action="store_true")
+    p_flag.add_argument("--unread", action="store_true")
+    p_flag.add_argument("--star", action="store_true")
+    p_flag.add_argument("--unstar", action="store_true")
+    p_flag.set_defaults(func=cmd_flag)
+
+    p_draft = sub.add_parser("draft", help="сохранить черновик (не отправляет)")
+    p_draft.add_argument("--to", required=True)
+    p_draft.add_argument("--cc")
+    p_draft.add_argument("--subject", required=True)
+    p_draft.add_argument("--body", required=True, help='текст или "-" для stdin')
+    p_draft.add_argument("--in-reply-to", help="Message-ID письма, на которое отвечаем")
+    p_draft.set_defaults(func=cmd_draft)
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
+    try:
+        result = args.func(args)
+    except MailctlError as exc:
+        print(f"mailctl: {exc}", file=sys.stderr)
+        return 1
+    except imaplib.IMAP4.error as exc:
+        print(f"mailctl: IMAP-ошибка: {exc}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+    json.dump(result, sys.stdout, ensure_ascii=False, indent=2)
+    sys.stdout.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

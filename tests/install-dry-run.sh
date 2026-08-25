@@ -23,6 +23,7 @@ grep -F "DRY-RUN: copy $tmp_home/.gitconfig -> $tmp_home/.gitconfig.local" "$out
 grep -F "DRY-RUN: symlink $repo_dir/claude/settings.json -> $tmp_home/.claude/settings.json" "$output" >/dev/null
 grep -F "DRY-RUN: symlink $repo_dir/claude/skills/visual-teacher -> $tmp_home/.claude/skills/visual-teacher" "$output" >/dev/null
 grep -F "DRY-RUN: symlink $repo_dir/hammerspoon/init.lua -> $tmp_home/.hammerspoon/init.lua" "$output" >/dev/null
+grep -F "DRY-RUN: symlink $repo_dir/mailctl/mailctl -> $tmp_home/.local/bin/mailctl" "$output" >/dev/null
 grep -F "DRY-RUN: git -C $repo_dir config core.hooksPath .githooks" "$output" >/dev/null
 grep -F "DRY-RUN: bash $repo_dir/macos/defaults.sh" "$output" >/dev/null
 
