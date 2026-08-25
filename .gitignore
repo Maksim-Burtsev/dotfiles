@@ -28,3 +28,4 @@ id_ed25519.*
 *.asc
 *.kdbx
 .netrc
+__pycache__/

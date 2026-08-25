@@ -1,0 +1,14 @@
+# Скопировать в ~/.config/mailctl/accounts.toml и вписать свои адреса.
+# Сам файл в репу не коммитим: там адреса. Паролей тут нет вообще -
+# они лежат в Keychain (сервис "mailctl", account - имя секции).
+
+[accounts.mailru]
+address = "you@mail.ru"
+imap_host = "imap.mail.ru"
+imap_port = 993
+default = true
+
+[accounts.gmail]
+address = "you@gmail.com"
+imap_host = "imap.gmail.com"
+imap_port = 993
