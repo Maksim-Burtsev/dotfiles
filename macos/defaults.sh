@@ -34,6 +34,20 @@ defaults write com.apple.HIToolbox AppleEnabledInputSources -array \
   '<dict><key>Bundle ID</key><string>com.apple.CharacterPaletteIM</string><key>InputSourceKind</key><string>Non Keyboard Input Method</string></dict>' \
   '<dict><key>InputSourceKind</key><string>Keyboard Layout</string><key>KeyboardLayout ID</key><integer>19458</integer><key>KeyboardLayout Name</key><string>RussianWin</string></dict>'
 
+# Trackpad
+# Tap to click: без него двухпальцевый тап не даёт secondary click — правый клик
+# требует физического нажатия. TrackpadRightClick сам по себе это не включает.
+# Настройка живёт в двух доменах (встроенный трекпад и Magic Trackpad по BT),
+# плюс дублируется в NSGlobalDomain — оттуда её читает логин-сессия.
+for trackpad_domain in com.apple.AppleMultitouchTrackpad \
+                       com.apple.driver.AppleBluetoothMultitouch.trackpad; do
+  defaults write "$trackpad_domain" Clicking -bool true
+  defaults write "$trackpad_domain" TrackpadRightClick -bool true
+done
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+
 # Screenshots
 screenshots_dir="${HOME}/Pictures/Screenshots"
 mkdir -p "$screenshots_dir"
