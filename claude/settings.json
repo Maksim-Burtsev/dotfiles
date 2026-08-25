@@ -30,5 +30,31 @@
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh post",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh stop",
+            "timeout": 30,
+            "statusMessage": "Проверяю дотфайлы..."
+          }
+        ]
+      }
+    ]
+  }
 }

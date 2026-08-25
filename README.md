@@ -5,7 +5,7 @@ Personal macOS dotfiles and bootstrap scripts.
 ## Structure
 
 - `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
-- `claude/` - Claude Code settings and custom skills.
+- `claude/` - Claude Code settings, custom skills, глобальный `CLAUDE.md` и хуки. `hooks/dotfiles-guard.sh` напоминает агентам класть изменения настроек в репу: после команды, меняющей систему (`defaults write`, `brew install`, `pmset`, ...), и на выходе из сессии, если в репе есть незакоммиченное или незапушенное.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `iterm/` - exported iTerm profile JSON for manual import.
