@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Mac mini всегда от сети, батареи нет, но -a покрывает все источники питания.
 # displaysleep — когда гаснет экран, sleep — когда засыпает сама система.
-sudo pmset -a displaysleep 30 sleep 60
+sudo pmset -a displaysleep 15 sleep 60
 
 # Пробуждение без пароля: после сна сразу возвращаемся ровно туда, где заснули.
 # `defaults write com.apple.screensaver askForPassword` начиная с Ventura
