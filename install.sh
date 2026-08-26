@@ -118,6 +118,23 @@ backup_existing_path() {
   fi
 }
 
+install_pi() {
+  if command -v pi >/dev/null 2>&1; then
+    log "OK: pi already installed"
+    return
+  fi
+
+  # brew его не знает. Пакеты расширений ставить отдельно не нужно:
+  # pi поднимает их сам из "packages" в pi/settings.json при первом запуске.
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "DRY-RUN: npm install -g --ignore-scripts @earendil-works/pi-coding-agent"
+    return
+  fi
+
+  command -v npm >/dev/null 2>&1 || die "npm is required to install pi (brew install node)"
+  npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+}
+
 link_file() {
   local source="$1"
   local target="$2"
@@ -177,6 +194,8 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
   link_file "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
+  link_file "$DOTFILES_DIR/pi/settings.json" "$HOME/.pi/agent/settings.json"
+  link_file "$DOTFILES_DIR/pi/extensions/dotfiles-guard.ts" "$HOME/.pi/agent/extensions/dotfiles-guard.ts"
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
 
@@ -212,6 +231,7 @@ apply_power_settings() {
 
 install_homebrew_packages
 install_oh_my_zsh
+install_pi
 link_dotfiles
 apply_macos_defaults
 apply_power_settings
