@@ -9,6 +9,7 @@ Personal macOS dotfiles and bootstrap scripts.
 - `pi/` - [pi coding agent](https://pi.dev): `settings.json` (провайдер, модели, пути к скиллам, список npm-пакетов расширений) и `extensions/`. Пакеты отдельной установки не требуют — pi поднимает их из `packages` при первом запуске. `extensions/dotfiles-guard.ts` — тот же страж, что и в Claude Code: адаптер поверх `claude/hooks/dotfiles-guard.sh`, чтобы регэксп мутаторов и git-логика жили в одном месте.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
+- `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.
 - `iterm/` - exported iTerm profile JSON for manual import.
 - `mailctl/` - `mailctl`, IMAP-клиент для агентов и для рук; линкуется в `~/.local/bin`. Ящики описываются в `~/.config/mailctl/accounts.toml` (не в репе), пароли живут в Keychain под сервисом `mailctl`.
 - `macos/` - `defaults.sh` for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control. `power.sh` for sleep timers and the lock screen; it is separate because it needs `sudo` and the login password.
