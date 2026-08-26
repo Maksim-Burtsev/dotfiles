@@ -6,6 +6,8 @@ brew "ast-grep"
 brew "bat"
 # Official ODBC driver implementation for accessing ClickHouse as a data source
 brew "clickhouse-odbc"
+# Cross-platform make
+brew "cmake"
 # Command-line fuzzy finder written in Go
 brew "fzf"
 # GitHub command-line tool
