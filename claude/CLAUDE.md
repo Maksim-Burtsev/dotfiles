@@ -15,10 +15,9 @@
 | git config | `git/` |
 | VSCode settings/keybindings | `vscode/` |
 | Claude Code settings, скиллы, хуки | `claude/` |
-| pi (второй харнесс): settings, extensions | `pi/` |
 | iTerm | `iterm/` — экспорт профиля вручную |
 
-`zsh/`, `git/`, `vscode/`, `claude/`, `pi/`, `hammerspoon/` слинкованы в `$HOME`: правка файла в `$HOME` **и есть** правка репы, остаётся только закоммитить.
+`zsh/`, `git/`, `vscode/`, `claude/`, `hammerspoon/` слинкованы в `$HOME`: правка файла в `$HOME` **и есть** правка репы, остаётся только закоммитить.
 Всё остальное синка не имеет — команду, применённую вживую, нужно продублировать строкой в соответствующем скрипте.
 
 Порядок: применить вживую → отразить в репе → `./sync.sh` (если трогал brew или настройки Claude через UI) → `git commit` → `git push`.
