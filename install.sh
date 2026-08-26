@@ -197,6 +197,7 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/pi/settings.json" "$HOME/.pi/agent/settings.json"
   link_file "$DOTFILES_DIR/pi/extensions/dotfiles-guard.ts" "$HOME/.pi/agent/extensions/dotfiles-guard.ts"
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
+  link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
 
   # Хуки не переносятся при clone, поэтому включает их установщик.
