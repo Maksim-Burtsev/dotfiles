@@ -8,6 +8,8 @@ brew "bat"
 brew "clickhouse-odbc"
 # Cross-platform make
 brew "cmake"
+# Play, record, convert, and stream select audio and video codecs
+brew "ffmpeg"
 # Command-line fuzzy finder written in Go
 brew "fzf"
 # GitHub command-line tool
