@@ -10,6 +10,8 @@ brew "clickhouse-odbc"
 brew "fzf"
 # GitHub command-line tool
 brew "gh"
+# Distributed revision control system
+brew "git"
 # Quickly rewrite git repository history
 brew "git-filter-repo"
 # Audit git repos for secrets
@@ -30,18 +32,18 @@ brew "micro"
 brew "node"
 # AI coding agent, built for the terminal
 brew "opencode"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.14"
 # Execute binaries from Python packages in isolated environments
 brew "pipx"
 # Package compiler and linker metadata toolkit
 brew "pkgconf"
-# Python dependency management tool
+# Python package management tool
 brew "poetry"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.13"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.14"
 # Extremely fast Python linter, written in Rust
 brew "ruff"
 # User interface to the TELNET protocol
@@ -113,4 +115,7 @@ vscode "tomoki1207.pdf"
 vscode "twxs.cmake"
 go "golang.org/x/tools/gopls"
 go "honnef.co/go/tools/cmd/staticcheck"
+npm "@anthropic-ai/claude-code"
+npm "@earendil-works/pi-coding-agent"
 npm "@vscode/vsce"
+npm "pnpm"
