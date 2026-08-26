@@ -2,16 +2,28 @@
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "medium",
-  "enabledModels": ["anthropic/*"],
+  "enabledModels": [
+    "anthropic/*"
+  ],
   "theme": "dark",
   "tuiMode": "fullscreen",
   "doubleEscapeAction": "tree",
   "collapseChangelog": true,
   "defaultProjectTrust": "ask",
-  "skills": ["~/.claude/skills", "~/open-source/punchcard/skills"],
-  "markdown": { "mermaid": "streaming" },
-  "warnings": { "anthropicExtraUsage": true },
-  "retry": { "enabled": true, "maxRetries": 3 },
+  "skills": [
+    "~/.claude/skills",
+    "~/open-source/punchcard/skills"
+  ],
+  "markdown": {
+    "mermaid": "streaming"
+  },
+  "warnings": {
+    "anthropicExtraUsage": true
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  },
   "packages": [
     "npm:pi-subagents",
     "npm:pi-background-tasks",
@@ -25,5 +37,6 @@
     "npm:pi-mcp-adapter",
     "npm:pi-cc-extensions",
     "npm:@narumitw/pi-usage"
-  ]
+  ],
+  "lastChangelogVersion": "0.84.3"
 }
