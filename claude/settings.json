@@ -61,5 +61,8 @@
     "claude-opus-5": {
       "effortLevel": "medium"
     }
+  },
+  "env": {
+    "CLAUDE_CODE_NATIVE_CURSOR": "1"
   }
 }
