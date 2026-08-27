@@ -32,6 +32,8 @@ brew "jpeg-xl"
 brew "libmagic"
 # Postgres C API library
 brew "libpq"
+# Build and publish Rust crates as Python packages
+brew "maturin"
 # Modern and intuitive terminal-based text editor
 brew "micro"
 # Open-source, cross-platform JavaScript runtime environment
@@ -52,6 +54,8 @@ brew "python@3.12"
 brew "python@3.13"
 # Extremely fast Python linter, written in Rust
 brew "ruff"
+# Safe, concurrent, practical language
+brew "rust"
 # User interface to the TELNET protocol
 brew "telnet"
 # Terminal multiplexer
