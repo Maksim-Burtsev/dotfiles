@@ -26,6 +26,8 @@ brew "go-task"
 brew "golangci-lint"
 # GNU grep, egrep and fgrep
 brew "grep"
+# New file format for still image compression
+brew "jpeg-xl"
 # Implementation of the file(1) command
 brew "libmagic"
 # Postgres C API library
