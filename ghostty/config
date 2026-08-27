@@ -9,7 +9,7 @@ font-size = 15
 background-opacity = 0.947
 window-width = 91
 window-height = 30
-cursor-style = block
+cursor-style = bar
 cursor-style-blink = false
 macos-option-as-alt = false
 
