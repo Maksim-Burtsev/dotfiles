@@ -1,0 +1,4 @@
+# Claude Code переписывает settings.json при каждом переключении модели/эффорта в UI.
+# Фильтр вырезает эти ключи и сортирует остальные, чтобы рабочий процесс не выглядел
+# как изменение настроек. Сам фильтр ставит install.sh (git config в clone не приезжает).
+claude/settings.json filter=claude-volatile

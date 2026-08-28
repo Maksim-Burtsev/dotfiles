@@ -1,47 +1,18 @@
 {
-  "model": "opus[1m]",
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh post",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh stop",
-            "timeout": 30,
-            "statusMessage": "Проверяю дотфайлы..."
-          }
-        ]
-      }
-    ]
-  },
+  "agentPushNotifEnabled": true,
   "enabledPlugins": {
-    "superpowers@superpowers-dev": true,
     "ponytail@ponytail": true,
-    "punchcard@punchcard": true
+    "punchcard@punchcard": true,
+    "superpowers@superpowers-dev": true
+  },
+  "env": {
+    "CLAUDE_CODE_NATIVE_CURSOR": "1"
   },
   "extraKnownMarketplaces": {
-    "superpowers-dev": {
-      "source": {
-        "source": "github",
-        "repo": "obra/superpowers"
-      }
-    },
     "ponytail": {
       "source": {
-        "source": "github",
-        "repo": "DietrichGebert/ponytail"
+        "repo": "DietrichGebert/ponytail",
+        "source": "github"
       }
     },
     "punchcard": {
@@ -49,20 +20,42 @@
         "source": "git",
         "url": "https://github.com/Maksim-Burtsev/punchcard.git"
       }
+    },
+    "superpowers-dev": {
+      "source": {
+        "repo": "obra/superpowers",
+        "source": "github"
+      }
     }
   },
-  "effortLevel": "medium",
-  "tui": "fullscreen",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh post",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh stop",
+            "statusMessage": "Проверяю дотфайлы...",
+            "timeout": 30,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-opus-5": {
-      "effortLevel": "medium"
-    }
-  },
-  "env": {
-    "CLAUDE_CODE_NATIVE_CURSOR": "1"
-  }
+  "tui": "fullscreen"
 }

@@ -183,6 +183,11 @@ link_dotfiles() {
 
   # Хуки не переносятся при clone, поэтому включает их установщик.
   run_or_print git -C "$DOTFILES_DIR" config core.hooksPath .githooks
+
+  # То же и с фильтром из .gitattributes: срезает model/effortLevel из
+  # claude/settings.json, чтобы переключение модели в UI не было изменением репы.
+  run_or_print git -C "$DOTFILES_DIR" config filter.claude-volatile.clean "jq -S 'del(.model, .effortLevel, .modelSettings)'"
+  run_or_print git -C "$DOTFILES_DIR" config filter.claude-volatile.required true
 }
 
 apply_macos_defaults() {
