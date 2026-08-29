@@ -34,7 +34,12 @@ stop)
   # Без этого блокировка зациклится: наш же reason снова доводит модель до Stop.
   [[ "$(printf '%s' "$input" | jq -r '.stop_hook_active // false' 2>/dev/null)" == "true" ]] && exit 0
 
-  dirty="$(git -C "$DOTFILES_DIR" status --porcelain 2>/dev/null)"
+  # Не status --porcelain: он сравнивает по stat и не прогоняет clean-фильтры,
+  # поэтому переписанный Claude Code settings.json вечно висит как " M", хотя
+  # после claude-volatile он совпадает с индексом. diff сравнивает содержимое.
+  dirty="$( { git -C "$DOTFILES_DIR" diff --name-only
+              git -C "$DOTFILES_DIR" diff --cached --name-only
+              git -C "$DOTFILES_DIR" ls-files --others --exclude-standard; } 2>/dev/null | sort -u )"
   git -C "$DOTFILES_DIR" fetch --quiet origin 2>/dev/null
   ahead="$(git -C "$DOTFILES_DIR" log --oneline @{u}..HEAD 2>/dev/null)"
   [[ -z "$dirty" && -z "$ahead" ]] && exit 0
