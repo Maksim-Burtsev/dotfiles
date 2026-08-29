@@ -5,13 +5,13 @@ Personal macOS dotfiles and bootstrap scripts.
 ## Structure
 
 - `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
-- `claude/` - Claude Code settings, custom skills, глобальный `CLAUDE.md` и хуки. `hooks/dotfiles-guard.sh` напоминает агентам класть изменения настроек в репу: после команды, меняющей систему (`defaults write`, `brew install`, `pmset`, ...), и на выходе из сессии, если в репе есть незакоммиченное или незапушенное.
+- `claude/` - Claude Code settings, custom skills, the global `CLAUDE.md`, and hooks. `hooks/dotfiles-guard.sh` reminds agents to put machine settings into the repo: right after a command that changes the system (`defaults write`, `brew install`, `pmset`, ...), and on session exit if the repo has uncommitted or unpushed work.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
-  Выбранные модель и уровень эффорта (`model`, `effortLevel`, `modelSettings`) в репу не попадают: clean-фильтр из `.gitattributes` срезает их при `git add`, поэтому переключение модели в UI не делает репу грязной. Фильтр включает `install.sh`.
+  The selected model and effort level (`model`, `effortLevel`, `modelSettings`) never reach the repo: a clean filter from `.gitattributes` strips them on `git add`, so switching models in the UI does not make the repo dirty. `install.sh` enables the filter.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.
 - `iterm/` - exported iTerm profile JSON for manual import.
-- `mailctl/` - `mailctl`, IMAP-клиент для агентов и для рук; линкуется в `~/.local/bin`. Ящики описываются в `~/.config/mailctl/accounts.toml` (не в репе), пароли живут в Keychain под сервисом `mailctl`.
+- `mailctl/` - `mailctl`, an IMAP client for agents and for hand use; symlinked into `~/.local/bin`. Mailboxes are described in `~/.config/mailctl/accounts.toml` (not tracked), passwords live in the Keychain under the `mailctl` service.
 - `macos/` - `defaults.sh` for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control. `power.sh` for sleep timers and the lock screen; it is separate because it needs `sudo` and the login password.
 - `vscode/` - VSCode settings and keybindings.
 - `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.

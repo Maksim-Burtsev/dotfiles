@@ -1,26 +1,28 @@
-# Настройки этой машины живут в git
+# This machine's settings live in git
 
-Репа: `~/open-source/dotfiles` (github.com/Maksim-Burtsev/dotfiles).
-Правило: **изменил состояние машины — отрази это в репе и запушь в том же заходе.**
-Живое применение без коммита = изменение, которое потеряется при переустановке.
+Repo: `~/open-source/dotfiles` (github.com/Maksim-Burtsev/dotfiles).
+Rule: **changed the state of the machine — reflect it in the repo and push in the same pass.**
+Applied live without a commit = a change that dies on the next reinstall.
 
-Куда что класть:
+Where things go:
 
-| Что поменял | Файл в репе |
+| What you changed | File in the repo |
 |---|---|
-| `defaults write`, вид системы, Finder, клавиатура, Dock, скриншоты | `macos/defaults.sh` |
-| `pmset`, `sysadminctl`, сон и экран блокировки | `macos/power.sh` |
-| установил/удалил пакет, cask, npm/go/uv-тул, расширение VSCode | `Brewfile` — через `./sync.sh`, не руками |
-| zsh, алиасы, PATH | `zsh/` |
+| `defaults write`, appearance, Finder, keyboard, Dock, screenshots | `macos/defaults.sh` |
+| `pmset`, `sysadminctl`, sleep and lock screen | `macos/power.sh` |
+| installed/removed a package, cask, npm/go/uv tool, VSCode extension | `Brewfile` — via `./sync.sh`, not by hand |
+| zsh, aliases, PATH | `zsh/` |
 | git config | `git/` |
 | VSCode settings/keybindings | `vscode/` |
-| Claude Code settings, скиллы, хуки | `claude/` |
-| iTerm | `iterm/` — экспорт профиля вручную |
+| Claude Code settings, skills, hooks | `claude/` |
+| iTerm | `iterm/` — export the profile manually |
 
-`zsh/`, `git/`, `vscode/`, `claude/`, `hammerspoon/` слинкованы в `$HOME`: правка файла в `$HOME` **и есть** правка репы, остаётся только закоммитить.
-Всё остальное синка не имеет — команду, применённую вживую, нужно продублировать строкой в соответствующем скрипте.
+`zsh/`, `git/`, `vscode/`, `claude/`, `hammerspoon/` are symlinked into `$HOME`: editing the file in `$HOME` **is** editing the repo, all that is left is to commit.
+Everything else has no sync — a command applied live has to be duplicated as a line in the matching script.
 
-Порядок: применить вживую → отразить в репе → `./sync.sh` (если трогал brew или настройки Claude через UI) → `git commit` → `git push`.
+Order: apply live → reflect in the repo → `./sync.sh` (if you touched brew or Claude settings through the UI) → `git commit` → `git push`.
 
-Не коммить временное и отладочное — скажи об этом пользователю явно вместо коммита.
-Чекаут общий с параллельными сессиями: перед правкой перечитывай файл, коммить только свои изменения (`git add <пути>`, не `git add -A`).
+**The repo's language is English.** Commit messages, README, and any docs or code comments you write here are in English, no matter what language the conversation is in. Talk to the user in whatever language they use; write English into the repo.
+
+Do not commit temporary or debugging changes — say so to the user explicitly instead of committing.
+The checkout is shared with parallel sessions: re-read a file before editing it, and commit only your own changes (`git add <paths>`, not `git add -A`).
