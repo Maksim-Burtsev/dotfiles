@@ -1,0 +1,584 @@
+<title>Утренний срез</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* Claude light — single committed theme, no OS inversion */
+  :root {
+    --ground:   #F0EEE6;
+    --surface:  #FAF9F5;
+    --ink:      #191919;
+    --ink-soft: #45443F;
+    --ink-mute: #6E6C63;
+    --line:     #E0DDD2;
+    --line-firm:#CBC7B8;
+    --accent:   #BC5B38;
+    --accent-soft: #E7E4D9;
+    --warn:     #BC5B38;
+    --warn-soft:#F6E5DD;
+    --done:     #54684B;
+    --done-soft:#E7EBE0;
+
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    --display: "Bricolage Grotesque", "IBM Plex Sans", ui-sans-serif, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 72px;
+  }
+
+  /* ---------- header ---------- */
+
+  .masthead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 16px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: -0.022em;
+    line-height: 1;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .window {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 0.02em;
+    margin-left: auto;
+  }
+
+  .tally {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tally div {
+    flex: 1 1 120px;
+    padding: 14px 16px 14px 0;
+  }
+
+  .tally dt {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-mute);
+    margin: 0 0 3px;
+  }
+
+  .tally dd {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .tally .zero { color: var(--ink-mute); }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 40px; }
+
+  .rubric {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .rubric h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .rubric::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line-firm);
+  }
+
+  .rubric .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- register rows ---------- */
+
+  .register {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    gap: 0 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+
+  .stamp {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+
+  .stamp b {
+    display: block;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .stamp span {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .body h3 {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+    margin: 0 0 5px;
+    text-wrap: balance;
+  }
+
+  .body p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .body p + p { margin-top: 7px; }
+
+  .src {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- chips ---------- */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 3px 7px;
+    border-radius: 3px;
+    vertical-align: 2px;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  .chip-warn { background: var(--warn-soft); color: var(--warn); }
+  .chip-done { background: var(--done-soft); color: var(--done); }
+
+  .countdown {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warn);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry-done h3, .entry-done .body p { color: var(--ink-mute); }
+  .entry-done h3 { font-weight: 500; }
+
+  /* ---------- jobs table ---------- */
+
+  .scroller {
+    overflow-x: auto;
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    min-width: 460px;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-mute);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    vertical-align: baseline;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.role { color: var(--ink); font-weight: 500; }
+
+  td.pay {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 13px;
+  }
+
+  td.pay.none { color: var(--ink-mute); }
+  td.pay em { font-style: normal; color: var(--accent); font-weight: 600; }
+
+  /* ---------- reading list ---------- */
+
+  .ships {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 7px;
+  }
+
+  .ships li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    align-items: baseline;
+  }
+
+  .ships code, .body code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--accent-soft);
+    color: var(--ink-soft);
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .ships li > span:first-child {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--line-firm);
+    transform: translateY(-2px);
+  }
+
+  /* ---------- noise ---------- */
+
+  .noise {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 14px 24px;
+  }
+
+  .noise li {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-left: 11px;
+    border-left: 1px solid var(--line-firm);
+  }
+
+  .noise dfn {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-style: normal;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-soft);
+  }
+
+  .noise dfn i {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--ink-mute);
+  }
+
+  .noise span {
+    font-size: 12.5px;
+    color: var(--ink-mute);
+    line-height: 1.4;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 520px) {
+    .entry { grid-template-columns: 1fr; gap: 6px; }
+    .stamp b { display: inline; }
+    .stamp { padding-top: 0; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <h1>Утренний срез</h1>
+    <div class="window">28 АВГ 11:00 → 29 АВГ 11:00 · ЕРЕВАН</div>
+  </header>
+
+  <dl class="tally">
+    <div>
+      <dt>Тредов</dt>
+      <dd>23</dd>
+    </div>
+    <div>
+      <dt>Требует тебя</dt>
+      <dd>2</dd>
+    </div>
+    <div>
+      <dt>По работе</dt>
+      <dd>5</dd>
+    </div>
+    <div>
+      <dt>В спаме</dt>
+      <dd class="zero">0</dd>
+    </div>
+  </dl>
+
+  <section>
+    <div class="rubric">
+      <h2>Требует тебя</h2>
+      <span class="count">2</span>
+    </div>
+
+    <div class="register">
+
+      <div class="entry">
+        <div class="stamp"><b>16:16</b><span>28 АВГ</span></div>
+        <div class="body">
+          <h3>Заказ Ozon ждёт в пункте выдачи<span class="chip chip-warn">13 дней</span></h3>
+          <p>Ереван, проспект Комитаса, 22 · пн–вс 9:00–21:00. Забрать до <b>11 сентября, 21:00</b> — иначе уедет обратно на склад. Утром того же дня доставку двигали на 28–30 августа, приехало раньше срока.</p>
+          <p class="src">mailer@sender.ozon.ru → zadrot-lol@list.ru</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>10:14</b><span>29 АВГ</span></div>
+        <div class="body">
+          <h3>Microsoft меняет Services Agreement<span class="chip chip-warn">32 дня</span></h3>
+          <p>Новая редакция вступает в силу <b>30 сентября 2026</b>. Продолжаешь пользоваться после этой даты — считается, что согласился. Отказ = закрыть аккаунт до этого дня.</p>
+          <p class="src">msa@communication.microsoft.com → zadrot-lol@list.ru</p>
+        </div>
+      </div>
+
+      <div class="entry entry-done">
+        <div class="stamp"><b>21:59</b><span>28 АВГ</span></div>
+        <div class="body">
+          <h3>PyPI: вход с нового устройства и проект similar-rs<span class="chip chip-done">это ты</span></h3>
+          <p>Два письма за 4 минуты: вход с неопознанного устройства (Firefox / macOS) и создание проекта <code>similar-rs</code> через trusted publisher <code>wheels.yml</code>. Подтверждено тобой — дальше ничего не нужно.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="rubric">
+      <h2>Работа</h2>
+      <span class="count">5</span>
+    </div>
+
+    <div class="register">
+
+      <div class="entry">
+        <div class="stamp"><b>11:43</b><span>16:41</span></div>
+        <div class="body">
+          <h3>Два отказа за день</h3>
+          <p><b>Лист Ренталс Лимитед</b> — Senior Python Developer. <b>Вайт Код</b> — Senior Python developer.</p>
+          <p>Обе компании утром 29-го всплыли в письме «резюме смотрели вчера» — то есть открыли резюме и отказали в тот же день. Резюме: Senior Python Backend Engineer.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>17:02</b><span>28 АВГ</span></div>
+        <div class="body">
+          <h3>Отклик ушёл в Финам</h3>
+          <p>Backend-разработчик / Инженер автоматизации IT-операций (Python, AI/LLM), через Хабр Карьеру. Уведомление ушло куратору вакансии, ответ придёт почтой или в диалоги на сайте.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>10:44</b><span>29 АВГ</span></div>
+        <div class="body">
+          <h3>Новые вакансии под резюме</h3>
+          <div class="scroller">
+            <table>
+              <thead>
+                <tr><th>Позиция</th><th>Компания</th><th style="text-align:right">Вилка</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="role">Архитектор решений AI / ML / Highload</td><td>Воронцова Виктория</td><td class="pay"><em>до 450 000 ₽</em></td></tr>
+                <tr><td class="role">Python Backend Developer</td><td>Miles&amp;Miles</td><td class="pay">до 250 000 ₽</td></tr>
+                <tr><td class="role">Senior Python Backend Developer</td><td>МТС</td><td class="pay none">не указана</td></tr>
+                <tr><td class="role">Senior python developer</td><td>X5 Tech</td><td class="pay none">не указана</td></tr>
+                <tr><td class="role">Middle Python (Django)</td><td>X5 Tech</td><td class="pay none">не указана</td></tr>
+                <tr><td class="role">Python developer</td><td>Платежное Решение</td><td class="pay none">не указана</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>18:31</b><span>28 АВГ</span></div>
+        <div class="body">
+          <h3>getmatch: 22 вакансии недели</h3>
+          <p>В превью одна — Engineering Manager, Offsite Discovery [Remote] @ Constructor.io, <b>8 000–10 500 $/мес net</b>. Остальные 21 письмо не раскрывает, только ссылкой.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="rubric">
+      <h2>Читать</h2>
+      <span class="count">4</span>
+    </div>
+
+    <div class="register">
+
+      <div class="entry">
+        <div class="stamp"><b>08:39</b><span>29 АВГ</span></div>
+        <div class="body">
+          <h3>Claude Code за неделю</h3>
+          <ul class="ships">
+            <li><span></span><span><code>/resume</code> в десктопе подхватывает сессию из терминала — даже уже закрытую</span></li>
+            <li><span></span><span>Старт сессии с телефона: машина с <code>claude rc</code> появляется карточкой в табе Code</span></li>
+            <li><span></span><span>Субагентам можно дать постоянную память между сессиями: <code>memory: project</code> во frontmatter</span></li>
+            <li><span></span><span><code>/loop</code>-задачи теперь видны в <code>/usage</code> с расходом токенов — глянь, во что обходится эта</span></li>
+            <li><span></span><span><code>promptCacheTtl</code> держит кэш час вместо 5 минут (на API-ключе)</span></li>
+            <li><span></span><span><code>--restricted</code> — без выполнения команд и сети, для общих машин</span></li>
+            <li><span></span><span>Вкладка Auto mode в <code>/permissions</code> — правила больше не править в JSON руками</span></li>
+            <li><span></span><span>CLI похудел до 75 МБ с 340 МБ, минус 40–70 МБ памяти на сессию</span></li>
+            <li><span></span><span>Вебинар 10 сентября про то, почему одна и та же задача стоит по-разному</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>09:02</b><span>29 АВГ</span></div>
+        <div class="body">
+          <h3>AI News: «не твои веса — не твой продукт»</h3>
+          <p>OpenAI разрывает поставку моделей в Cursor после сделки со SpaceX, отсечка <b>12 ноября</b>. Китайские лабы одновременно открывают веса и ужесточают лицензии. a16z и Lambda заливают железо деньгами. Anthropic даёт агентам стандарт для роботов и микроскопов.</p>
+          <p class="src">В письме только врезка, полный текст — по ссылке в Grok</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>21:54</b><span>28 АВГ</span></div>
+        <div class="body">
+          <h3>«Я час был уверен, что Cursor заменил Git, и полностью ошибался»</h3>
+          <p>Видео на 14 минут: GitHub больше не работает на технологиях 2010 года и не ревьюит код так, будто его писал человек. Ни то, ни другое уже не верно.</p>
+          <p class="src">atmoio@substack.com</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="stamp"><b>11:04</b><span>29 АВГ</span></div>
+        <div class="body">
+          <h3>Manning: −50% на MEAP и печатные</h3>
+          <p class="src">Флеш-распродажа, срок в письме не указан</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="rubric">
+      <h2>Шум</h2>
+      <span class="count">12</span>
+    </div>
+    <ul class="noise">
+      <li><dfn>Wispr Flow <i>×4</i></dfn><span>Регистрация в 20:46, дальше онбординг</span></li>
+      <li><dfn>LinkedIn</dfn><span>6 просмотров профиля</span></li>
+      <li><dfn>Ozon</dfn><span>Перенос доставки — закрыт прибытием</span></li>
+      <li><dfn>Bandit</dfn><span>Коллекция Fall '26</span></li>
+      <li><dfn>Glovo</dfn><span>−30% и бесплатная доставка</span></li>
+      <li><dfn>Тинькофф</dfn><span>Отели Долями</span></li>
+      <li><dfn>Substack</dfn><span>Лайк твоего комментария</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    Срез по всем папкам, включая спам и корзину — метки игнорируются.<br>
+    Спам за сутки: пусто. Непрочитанных из этого среза не осталось.
+  </footer>
+
+</div>
