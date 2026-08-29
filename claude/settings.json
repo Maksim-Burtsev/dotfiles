@@ -54,6 +54,19 @@
       }
     ]
   },
+  "permissions": {
+    "allow": [
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__search_threads",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__get_thread",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__list_labels",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__create_label",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__label_thread",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__unlabel_thread",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__label_message",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__unlabel_message",
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__update_message_labels"
+    ]
+  },
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
