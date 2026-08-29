@@ -48,6 +48,8 @@ brew "pipx"
 brew "pkgconf"
 # Python package management tool
 brew "poetry"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Interpreted, interactive, object-oriented programming language
