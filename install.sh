@@ -177,6 +177,11 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
   link_file "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
+
+  # agent-flow lives in its own repo; link it only if that checkout is present.
+  if [[ -d "$HOME/open-source/agent-flow/skills/agent-flow" ]]; then
+    link_file "$HOME/open-source/agent-flow/skills/agent-flow" "$HOME/.claude/skills/agent-flow"
+  fi
   link_file "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage" "$HOME/.claude/scheduled-tasks/mail-triage"
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
