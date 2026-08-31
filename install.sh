@@ -194,6 +194,12 @@ link_dotfiles() {
   # claude/settings.json, чтобы переключение модели в UI не было изменением репы.
   run_or_print git -C "$DOTFILES_DIR" config filter.claude-volatile.clean "jq -S 'del(.model, .effortLevel, .modelSettings)'"
   run_or_print git -C "$DOTFILES_DIR" config filter.claude-volatile.required true
+
+  # Same idea for VS Code: day/night theme flips are not a settings change.
+  # sed, not jq — VS Code writes JSONC (trailing commas) that jq refuses to parse.
+  # The pinned value is the canonical theme a fresh install gets.
+  run_or_print git -C "$DOTFILES_DIR" config filter.vscode-volatile.clean 'sed '"'"'s/"workbench.colorTheme": *"[^"]*"/"workbench.colorTheme": "Shokunin Light"/'"'"''
+  run_or_print git -C "$DOTFILES_DIR" config filter.vscode-volatile.required true
 }
 
 apply_macos_defaults() {

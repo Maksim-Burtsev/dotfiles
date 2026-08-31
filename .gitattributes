@@ -2,3 +2,7 @@
 # Фильтр вырезает эти ключи и сортирует остальные, чтобы рабочий процесс не выглядел
 # как изменение настроек. Сам фильтр ставит install.sh (git config в clone не приезжает).
 claude/settings.json filter=claude-volatile
+
+# VS Code theme flips day/night; git should not see them as changes.
+# The filter pins colorTheme to the canonical value (set in install.sh).
+vscode/settings.json filter=vscode-volatile

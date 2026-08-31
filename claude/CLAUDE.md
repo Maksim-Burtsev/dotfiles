@@ -22,6 +22,12 @@ Everything else has no sync — a command applied live has to be duplicated as a
 
 Order: apply live → reflect in the repo → `./sync.sh` (if you touched brew or Claude settings through the UI) → `git commit` → `git push`.
 
+**Not triggers — never commit, push, or nag about these:**
+- Claude Code model/effort changes (`model`, `effortLevel`, `modelSettings` in `claude/settings.json`) — stripped by the `claude-volatile` git filter.
+- VS Code theme flips (`workbench.colorTheme` in `vscode/settings.json`) — pinned by the `vscode-volatile` git filter; the user switches light/dark during the day on purpose.
+
+Both files can show a phantom ` M` in `git status` (stat-based, ignores clean filters). Trust `git diff` — if it is empty, the repo is clean.
+
 **The repo's language is English.** Commit messages, README, and any docs or code comments you write here are in English, no matter what language the conversation is in. Talk to the user in whatever language they use; write English into the repo.
 
 Do not commit temporary or debugging changes — say so to the user explicitly instead of committing.

@@ -49,13 +49,13 @@
     "python.languageServer": "Default",
     "workbench.statusBar.visible": false,
     "workbench.navigationControl.enabled": false,
-    "window.commandCenter": false,
     "workbench.layoutControl.enabled": false,
     "chat.commandCenter.enabled": false,
     "claudeCode.preferredLocation": "panel",
     "terminal.integrated.suggest.enabled": false,
     "chat.extensionUnification.enabled": false,
     "editor.lightbulb.enabled": "off",
-    "workbench.colorTheme": "Shokunin Dark",
-    "chat.titleBar.openInAgentsWindow.enabled": false
+    "workbench.colorTheme": "Shokunin Light",
+    "chat.titleBar.openInAgentsWindow.enabled": false,
+    "window.commandCenter": false
 }
