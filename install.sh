@@ -177,6 +177,7 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
   link_file "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
+  link_file "$DOTFILES_DIR/claude/skills/design-taste-frontend" "$HOME/.claude/skills/design-taste-frontend"
 
   # pitwall lives in its own repo; link it only if that checkout is present.
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
