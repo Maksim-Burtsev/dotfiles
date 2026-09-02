@@ -13,6 +13,10 @@ work() {
   nc -z 127.0.0.1 1080 2>/dev/null \
     || ssh -fN -D 1080 -i ~/.ssh/id_ed25519_work -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes "$WORK_SSH" \
     || return 1
+  if [ -n "$WORK_PROBE" ] && ! curl -s -o /dev/null --max-time 6 \
+       --socks5-hostname 127.0.0.1:1080 "$WORK_PROBE"; then
+    echo "work: tunnel is up but $WORK_PROBE is unreachable - VPN down on the laptop?" >&2
+  fi
   open -na "Brave Browser" --args \
     --proxy-server="socks5://127.0.0.1:1080" \
     --user-data-dir="$HOME/.brave-work"
