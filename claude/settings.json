@@ -1,6 +1,7 @@
 {
   "agentPushNotifEnabled": true,
   "enabledPlugins": {
+    "mattpocock-skills@mattpocock": true,
     "ponytail@ponytail": true,
     "punchcard@punchcard": true,
     "superpowers@superpowers-dev": true
@@ -9,6 +10,12 @@
     "CLAUDE_CODE_NATIVE_CURSOR": "1"
   },
   "extraKnownMarketplaces": {
+    "mattpocock": {
+      "source": {
+        "repo": "mattpocock/skills",
+        "source": "github"
+      }
+    },
     "ponytail": {
       "source": {
         "repo": "DietrichGebert/ponytail",
