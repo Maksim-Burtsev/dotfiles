@@ -4,18 +4,18 @@ status_path = "~/.local/share/vdirsyncer/status/"
 [pair work]
 a = "yandex"
 b = "google"
-collections = null
+collections = [["work", "events-28913538", "da955b8d83f2b65738eb9a9507f9e93c838ad3e202c3c00fae4ff2798344219b@group.calendar.google.com"]]
 conflict_resolution = "a wins"
 metadata = []
 
 [storage yandex]
 type = "caldav"
-url = "https://caldav.yandex.ru/calendars/maksim.burtsev%40tetrika.school/events-28913538/"
+url = "https://caldav.yandex.ru/calendars/maksim.burtsev%40tetrika.school/"
 username = "maksim.burtsev@tetrika.school"
 password.fetch = ["command", "security", "find-generic-password", "-s", "yandex-caldav", "-w"]
 
 [storage google]
 type = "google_calendar"
 token_file = "~/.local/share/vdirsyncer/google_token"
-client_id = "GOOGLE_CLIENT_ID"
+client_id = "457114413791-7ecaekfaoi72nluk9h172o90kv4iv72b.apps.googleusercontent.com"
 client_secret.fetch = ["command", "security", "find-generic-password", "-s", "google-calsync", "-w"]
