@@ -188,6 +188,10 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
 
+  # Yandex 360 <-> Google Calendar two-way sync (see vdirsyncer/README.md).
+  link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
+  link_file "$DOTFILES_DIR/vdirsyncer/dev.mburtsev.vdirsyncer.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.vdirsyncer.plist"
+
   # Хуки не переносятся при clone, поэтому включает их установщик.
   run_or_print git -C "$DOTFILES_DIR" config core.hooksPath .githooks
 
