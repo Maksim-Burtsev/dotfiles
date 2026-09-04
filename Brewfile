@@ -86,6 +86,8 @@ cask "ghostty"
 cask "hammerspoon"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
+# Free cross-platform office suite, fresh version
+cask "libreoffice"
 # Replacement for Docker Desktop
 cask "orbstack"
 # Open-source code editor
