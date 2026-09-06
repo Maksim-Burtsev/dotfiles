@@ -88,14 +88,8 @@ Regenerates the `Brewfile` from the current machine, restores the `~/.claude/set
 
 This repository stores public configuration only. Keep machine-local or sensitive values outside the repo:
 
-Work lives on the work laptop - corporate tokens, project code, work Git identities. This machine only reaches the corporate web through the `work` SOCKS tunnel (`zsh/aliases.zsh`), so no work credentials are configured here.
-
-- `~/.zshrc.local` - sourced last by the tracked `.zshrc`. Per-machine values and `PATH` entries go here:
-  ```bash
-  export WORK_SSH=user@work-laptop   # SSH target for the `work` tunnel
-  export WORK_PROBE=https://...      # optional URL to check the VPN is up behind it
-  ```
-- `~/.gitconfig.local` - included by the tracked `.gitconfig` when it exists (it does not on this machine). The installer copies an existing untracked `~/.gitconfig` here, with mode 600.
+- `~/.zshrc.local` - sourced last by the tracked `.zshrc`. Machine-local exports and `PATH` entries go here.
+- `~/.gitconfig.local` - included by the tracked `.gitconfig` when it exists. The installer copies an existing untracked `~/.gitconfig` here, with mode 600.
 - local `.env` files
 
 A `gitleaks` pre-commit hook scans staged content and blocks the commit if it finds a secret. It is enabled by `install.sh` via `core.hooksPath` - hooks are not carried over by `git clone`, so a fresh clone needs the installer to run once. The `.gitignore` only filters *filenames*; the hook is what actually inspects file contents.
