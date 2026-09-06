@@ -6,7 +6,7 @@ Personal macOS dotfiles and bootstrap scripts.
 
 - `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
 - `claude/` - Claude Code settings, custom skills, the global `CLAUDE.md`, and hooks. `hooks/dotfiles-guard.sh` reminds agents to put machine settings into the repo: right after a command that changes the system (`defaults write`, `brew install`, `pmset`, ...), and on session exit if the repo has uncommitted or unpushed work.
-- `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local`.
+- `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local` if that file exists.
   The selected model and effort level (`model`, `effortLevel`, `modelSettings`) never reach the repo: a clean filter from `.gitattributes` strips them on `git add`, so switching models in the UI does not make the repo dirty. `install.sh` enables the filter.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.
@@ -70,7 +70,7 @@ It also installs `oh-my-zsh` when `~/.oh-my-zsh` is missing - the tracked `.zshr
    ./install.sh --power
    ```
 6. Optional: `$(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc` - creates the `~/.fzf.zsh` that `.zshrc` sources.
-7. Create `~/.zshrc.local` and `~/.gitconfig.local` with machine-local values (see **Local Values** below).
+7. Create `~/.zshrc.local` with machine-local values (see **Local Values** below).
 8. iTerm: *Settings → Profiles → Other Actions → Import JSON Profiles* → `iterm/profile.json`.
 9. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
 10. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
@@ -88,14 +88,14 @@ Regenerates the `Brewfile` from the current machine, restores the `~/.claude/set
 
 This repository stores public configuration only. Keep machine-local or sensitive values outside the repo:
 
-- `~/.zshrc.local` - sourced last by the tracked `.zshrc`. Registry tokens and per-machine `PATH` entries go here:
+Work lives on the work laptop - corporate tokens, project code, work Git identities. This machine only reaches the corporate web through the `work` SOCKS tunnel (`zsh/aliases.zsh`), so no work credentials are configured here.
+
+- `~/.zshrc.local` - sourced last by the tracked `.zshrc`. Per-machine values and `PATH` entries go here:
   ```bash
-  export GITLAB_REGISTRY_ACCESS_TOKEN_NAME=...
-  export GITLAB_REGISTRY_ACCESS_TOKEN=...
-  export UV_INDEX_GITLAB_USERNAME="$GITLAB_REGISTRY_ACCESS_TOKEN_NAME"
-  export UV_INDEX_GITLAB_PASSWORD="$GITLAB_REGISTRY_ACCESS_TOKEN"
+  export WORK_SSH=user@work-laptop   # SSH target for the `work` tunnel
+  export WORK_PROBE=https://...      # optional URL to check the VPN is up behind it
   ```
-- `~/.gitconfig.local` - included by the tracked `.gitconfig`. Holds `url.*.insteadOf` entries with embedded credentials and `includeIf` blocks for work directories. The installer copies an existing untracked `~/.gitconfig` here automatically, with mode 600.
+- `~/.gitconfig.local` - included by the tracked `.gitconfig` when it exists (it does not on this machine). The installer copies an existing untracked `~/.gitconfig` here, with mode 600.
 - local `.env` files
 
 A `gitleaks` pre-commit hook scans staged content and blocks the commit if it finds a secret. It is enabled by `install.sh` via `core.hooksPath` - hooks are not carried over by `git clone`, so a fresh clone needs the installer to run once. The `.gitignore` only filters *filenames*; the hook is what actually inspects file contents.
