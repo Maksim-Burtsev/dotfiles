@@ -2,8 +2,8 @@
 font-family = Monaco
 font-size = 15
 
-# Тема: дефолтная тёмная Ghostty (фон #282c34). Перебрать другие:
-# ghostty +list-themes (интерактивное превью), выбранную вписать сюда: theme = <имя>.
+# Theme. Browse others: ghostty +list-themes (interactive preview).
+theme = TokyoNight Moon
 
 # Окно и вид — как в iTerm
 background-opacity = 0.947
