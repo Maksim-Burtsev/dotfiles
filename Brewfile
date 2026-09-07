@@ -8,6 +8,8 @@ brew "bat"
 brew "clickhouse-odbc"
 # Cross-platform make
 brew "cmake"
+# Structural diff tool that compares code by syntax tree
+brew "difftastic"
 # Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # Command-line fuzzy finder written in Go
@@ -16,6 +18,8 @@ brew "fzf"
 brew "gh"
 # Distributed revision control system
 brew "git"
+# Syntax-highlighting pager for git and diff output
+brew "git-delta"
 # Quickly rewrite git repository history
 brew "git-filter-repo"
 # Audit git repos for secrets
