@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+detect_base() {
+	git symbolic-ref -q --short refs/remotes/origin/HEAD && return
+	for b in origin/master origin/main origin/develop; do
+		git rev-parse --verify -q "$b^{commit}" >/dev/null && { echo "$b"; return; }
+	done
+	echo "origin/master"
+}
+
+first_line() {
+	git diff -U0 "$1...$2" -- "$3" | awk -F'[ ,+]' '/^@@/ {print $5; exit}'
+}
+
+if [ "${1:-}" = "--open" ]; then
+	shift
+	line=$(first_line "$1" "$2" "$3")
+	exec code --goto "$(git rev-parse --show-toplevel)/$3:${line:-1}"
+fi
+
+git rev-parse --git-dir >/dev/null 2>&1 || { echo "не git-репозиторий"; exit 1; }
+
+branch="${1:-HEAD}"
+base="${2:-${MR_BASE:-$(detect_base)}}"
+
+if [ "$branch" != HEAD ]; then
+	git fetch -q origin "$branch" "${base#origin/}" 2>/dev/null || true
+	git rev-parse --verify -q "origin/$branch^{commit}" >/dev/null && branch="origin/$branch"
+fi
+
+git rev-parse --verify -q "$branch^{commit}" >/dev/null \
+	|| { echo "ветка не найдена: $branch"; exit 1; }
+
+files=$(git diff --name-only "$base...$branch")
+[ -n "$files" ] || { echo "нет изменений относительно $base"; exit 0; }
+
+echo "$files" | fzf \
+	--ansi --reverse --height=100% --color=light \
+	--header="$branch  vs  $base   │   enter = VS Code   │   ctrl-o = на весь экран   │   ctrl-/ = layout" \
+	--preview "git diff --color=always $base...$branch -- {} | delta --paging=never --width \$FZF_PREVIEW_COLUMNS" \
+	--preview-window=right,72%,border-left \
+	--bind "ctrl-/:change-preview-window(down,75%|right,72%)" \
+	--bind "enter:execute-silent(mr --open $base $branch {})" \
+	--bind "ctrl-o:execute(git diff $base...$branch -- {} | delta --paging=always)"

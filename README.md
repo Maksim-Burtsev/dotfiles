@@ -6,7 +6,7 @@ Personal macOS dotfiles and bootstrap scripts.
 
 - `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
 - `claude/` - Claude Code settings, custom skills, the global `CLAUDE.md`, and hooks. `hooks/dotfiles-guard.sh` reminds agents to put machine settings into the repo: right after a command that changes the system (`defaults write`, `brew install`, `pmset`, ...), and on session exit if the repo has uncommitted or unpushed work.
-- `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local` if that file exists.
+- `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local` if that file exists. `delta` is the pager, so every diff, `git show`, `git log -p`, `git blame` and `git add -p` come out syntax-highlighted, with file names and line numbers as `vscode://` links. `mr` is a branch review TUI on top of git, delta and fzf, symlinked into `~/.local/bin`: `mr <branch>` lists the files changed against the repo's default branch, previews each diff and opens the picked file in VSCode at the first changed line.
   The selected model and effort level (`model`, `effortLevel`, `modelSettings`) never reach the repo: a clean filter from `.gitattributes` strips them on `git add`, so switching models in the UI does not make the repo dirty. `install.sh` enables the filter.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude).
 - `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.

@@ -19,3 +19,38 @@
 	path = ~/.gitconfig.local
 
 # Private url.insteadOf entries from the local ~/.gitconfig are intentionally not tracked.
+
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	light = true
+	navigate = true
+	line-numbers = true
+	hyperlinks = true
+	hyperlinks-file-link-format = vscode://file/{path}:{line}
+	syntax-theme = Coldark-Cold
+	file-style = bold blue
+	file-decoration-style = blue ul
+	hunk-header-decoration-style = blue box
+	hunk-header-style = file line-number syntax
+	minus-style = normal "#ffebe9"
+	minus-emph-style = normal "#ffc1c0"
+	plus-style = syntax "#e6ffec"
+	plus-emph-style = syntax "#abf2bc"
+	max-line-length = 0
+
+[diff]
+	colorMoved = default
+	algorithm = histogram
+
+[merge]
+	conflictstyle = zdiff3
+
+[alias]
+	review = "!f(){ git diff \"${2:-origin/master}...${1:-HEAD}\"; };f"
+	reviewt = "!f(){ GIT_EXTERNAL_DIFF=difft git --no-pager diff \"${2:-origin/master}...${1:-HEAD}\"; };f"
+	reviewls = "!f(){ git diff --stat \"${2:-origin/master}...${1:-HEAD}\"; };f"
