@@ -9,6 +9,10 @@ set -euo pipefail
 # displaysleep — когда гаснет экран, sleep — когда засыпает сама система.
 sudo pmset -a displaysleep 30 sleep 60
 
+# Wake every day at 08:45 so the Claude desktop app (LaunchAgent at 08:50) can
+# run the 09:00 mail-triage task; asleep Mac = task waits for the first manual open.
+sudo pmset repeat wakeorpoweron MTWRFSU 08:45:00
+
 # Пробуждение без пароля: после сна сразу возвращаемся ровно туда, где заснули.
 # `defaults write com.apple.screensaver askForPassword` начиная с Ventura
 # игнорируется — настройку читает только sysadminctl (это тот же тумблер, что

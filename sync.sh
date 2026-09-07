@@ -26,4 +26,9 @@ if [[ -f "$claude_settings" && ! -L "$claude_settings" ]]; then
   echo "claude/settings.json: симлинк был затёрт, содержимое сохранено и линк восстановлен"
 fi
 
+# Scheduled tasks are a copy, not a symlink (the app refuses symlinked task files).
+# The live copy is the source of truth: the app's update tool edits it in place.
+rsync -a --delete "$HOME/.claude/scheduled-tasks/mail-triage/" "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage/"
+echo "claude/scheduled-tasks/mail-triage синхронизирован из ~/.claude"
+
 gitleaks detect --source "$DOTFILES_DIR" --no-banner

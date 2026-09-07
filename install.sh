@@ -183,7 +183,16 @@ link_dotfiles() {
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
     link_file "$HOME/open-source/pitwall/skills/pitwall" "$HOME/.claude/skills/pitwall"
   fi
-  link_file "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage" "$HOME/.claude/scheduled-tasks/mail-triage"
+  # Scheduled tasks are copied, not linked: the desktop app refuses to open a
+  # task file through a symlink ("symlink detected before open"). ./sync.sh
+  # copies edits back into the repo.
+  mkdir -p "$HOME/.claude/scheduled-tasks"
+  if [[ ! -e "$HOME/.claude/scheduled-tasks/mail-triage" || -L "$HOME/.claude/scheduled-tasks/mail-triage" ]]; then
+    rm -f "$HOME/.claude/scheduled-tasks/mail-triage"
+    cp -R "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage" "$HOME/.claude/scheduled-tasks/mail-triage"
+  fi
+  # Opens the Claude app at 08:50 so the 09:00 task actually fires (see claude/*.plist).
+  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-morning.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-morning.plist"
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"

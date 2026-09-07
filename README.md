@@ -82,7 +82,7 @@ It also installs `oh-my-zsh` when `~/.oh-my-zsh` is missing - the tracked `.zshr
 ./sync.sh
 ```
 
-Regenerates the `Brewfile` from the current machine, restores the `~/.claude/settings.json` symlink if Claude Code overwrote it, and scans for secrets. Everything else is symlinked, so it needs no syncing. Run before committing.
+Regenerates the `Brewfile` from the current machine, restores the `~/.claude/settings.json` symlink if Claude Code overwrote it, copies `~/.claude/scheduled-tasks/mail-triage` back into the repo (the desktop app refuses symlinked task files, so that one is a copy), and scans for secrets. Everything else is symlinked, so it needs no syncing. Run before committing.
 
 ## Local Values
 
