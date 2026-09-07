@@ -3,6 +3,7 @@
 Runs in Anthropic's cloud (claude.ai/code/routines), daily at 05:00 UTC = 09:00 Yerevan,
 with the Gmail connector attached. Does not depend on the Mac being awake.
 This file is the source of truth for the prompt; update the routine with RemoteTrigger after editing.
+The local scheduled task `claude/scheduled-tasks/mail-triage` is disabled and kept only as a fallback.
 
 ---
 
