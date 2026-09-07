@@ -71,7 +71,20 @@
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__unlabel_thread",
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__label_message",
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__unlabel_message",
-      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__update_message_labels"
+      "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__update_message_labels",
+      "Artifact",
+      "PushNotification",
+      "Read",
+      "Write",
+      "Edit",
+      "Bash(ls:*)",
+      "Bash(date:*)",
+      "Bash(cp:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(sed:*)",
+      "Bash(grep:*)",
+      "Bash(python3:*)"
     ]
   },
   "skipDangerousModePermissionPrompt": true,
