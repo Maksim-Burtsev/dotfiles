@@ -191,8 +191,6 @@ link_dotfiles() {
     rm -f "$HOME/.claude/scheduled-tasks/mail-triage"
     cp -R "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage" "$HOME/.claude/scheduled-tasks/mail-triage"
   fi
-  # Opens the Claude app at 08:50 so the 09:00 task actually fires (see claude/*.plist).
-  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-morning.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-morning.plist"
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
