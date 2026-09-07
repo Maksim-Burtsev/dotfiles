@@ -194,6 +194,7 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
+  link_file "$DOTFILES_DIR/git/mr" "$HOME/.local/bin/mr"
 
   # Yandex 360 <-> Google Calendar two-way sync (see vdirsyncer/README.md).
   link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
