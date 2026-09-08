@@ -15,11 +15,6 @@
 	helper =
 	helper = !gh auth git-credential
 
-[include]
-	path = ~/.gitconfig.local
-
-# Private url.insteadOf entries from the local ~/.gitconfig are intentionally not tracked.
-
 [core]
 	pager = delta
 
@@ -54,3 +49,8 @@
 	review = "!f(){ git diff \"${2:-origin/master}...${1:-HEAD}\"; };f"
 	reviewt = "!f(){ GIT_EXTERNAL_DIFF=difft git --no-pager diff \"${2:-origin/master}...${1:-HEAD}\"; };f"
 	reviewls = "!f(){ git diff --stat \"${2:-origin/master}...${1:-HEAD}\"; };f"
+
+# Last, so machine-specific values win over everything tracked above
+# (private url.insteadOf entries; delta's hyperlink format on the remote box).
+[include]
+	path = ~/.gitconfig.local

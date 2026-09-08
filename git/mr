@@ -10,7 +10,10 @@ detect_base() {
 }
 
 first_line() {
-	git diff -U0 "$1...$2" -- "$3" | awk -F'[ ,+]' '/^@@/ {print $5; exit}'
+	# no `exit` in awk: it closes the pipe, git dies with SIGPIPE and pipefail
+	# kills the whole script on any diff larger than the pipe buffer.
+	git diff -U0 "$1...$2" -- "$3" |
+		awk '/^@@/ && !n { split($3, a, ","); print substr(a[1], 2); n = 1 }'
 }
 
 if [ "${1:-}" = "--open" ]; then
