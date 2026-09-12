@@ -1,3 +1,4 @@
+tap "maksim-burtsev/tap"
 # List ASCII idiomatic names and octal/decimal code-point forms
 brew "ascii"
 # Code searching, linting, rewriting
@@ -76,6 +77,8 @@ brew "wget"
 brew "yq"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
+# Read-only code navigator for the terminal
+brew "maksim-burtsev/tap/merl", trusted: true
 # Anthropic's official Claude AI desktop app
 cask "claude"
 # Column-oriented database management system

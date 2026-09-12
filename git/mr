@@ -19,7 +19,7 @@ first_line() {
 if [ "${1:-}" = "--open" ]; then
 	shift
 	line=$(first_line "$1" "$2" "$3")
-	exec code --goto "$(git rev-parse --show-toplevel)/$3:${line:-1}"
+	exec merl "$(git rev-parse --show-toplevel)/$3:${line:-1}"
 fi
 
 git rev-parse --git-dir >/dev/null 2>&1 || { echo "не git-репозиторий"; exit 1; }
@@ -40,9 +40,9 @@ files=$(git diff --name-only "$base...$branch")
 
 echo "$files" | fzf \
 	--ansi --reverse --height=100% --color=light \
-	--header="$branch  vs  $base   │   enter = VS Code   │   ctrl-o = на весь экран   │   ctrl-/ = layout" \
+	--header="$branch  vs  $base   │   enter = merl   │   ctrl-o = на весь экран   │   ctrl-/ = layout" \
 	--preview "git diff --color=always $base...$branch -- {} | delta --paging=never --width \$FZF_PREVIEW_COLUMNS" \
 	--preview-window=right,72%,border-left \
 	--bind "ctrl-/:change-preview-window(down,75%|right,72%)" \
-	--bind "enter:execute-silent(mr --open $base $branch {})" \
+	--bind "enter:execute(mr --open $base $branch {})" \
 	--bind "ctrl-o:execute(git diff $base...$branch -- {} | delta --paging=always)"
