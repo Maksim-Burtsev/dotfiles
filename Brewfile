@@ -9,8 +9,6 @@ brew "bat"
 brew "clickhouse-odbc"
 # Cross-platform make
 brew "cmake"
-# Structural diff tool that compares code by syntax tree
-brew "difftastic"
 # Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # Command-line fuzzy finder written in Go
@@ -19,8 +17,6 @@ brew "fzf"
 brew "gh"
 # Distributed revision control system
 brew "git"
-# Syntax-highlighting pager for git and diff output
-brew "git-delta"
 # Quickly rewrite git repository history
 brew "git-filter-repo"
 # Audit git repos for secrets
@@ -71,6 +67,8 @@ brew "tmux"
 brew "tree"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
+# Your CLI home video recorder
+brew "vhs"
 # Internet file retriever
 brew "wget"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
@@ -143,5 +141,6 @@ go "golang.org/x/tools/gopls"
 go "honnef.co/go/tools/cmd/staticcheck"
 uv "vdirsyncer[google]"
 npm "@anthropic-ai/claude-code"
+npm "@unprint/engine"
 npm "@vscode/vsce"
 npm "pnpm"
