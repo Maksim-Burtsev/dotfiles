@@ -193,6 +193,9 @@ link_dotfiles() {
   fi
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+  link_file "$DOTFILES_DIR/agterm/ghostty.conf" "$HOME/.config/agterm/ghostty.conf"
+  link_file "$DOTFILES_DIR/agterm/keymap.conf" "$HOME/.config/agterm/keymap.conf"
+  link_file "$DOTFILES_DIR/agterm/work-term" "$HOME/.local/bin/work-term"
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
   link_file "$DOTFILES_DIR/git/mr" "$HOME/.local/bin/mr"
 

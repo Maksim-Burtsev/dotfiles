@@ -1,4 +1,5 @@
 tap "maksim-burtsev/tap"
+tap "umputun/apps"
 # List ASCII idiomatic names and octal/decimal code-point forms
 brew "ascii"
 # Code searching, linting, rewriting
@@ -77,6 +78,8 @@ brew "yq"
 brew "zsh-autosuggestions"
 # Read-only code navigator for the terminal
 brew "maksim-burtsev/tap/merl", trusted: true
+# Terminal on libghostty with a workspace/session sidebar
+cask "umputun/apps/agterm", trusted: true
 # Anthropic's official Claude AI desktop app
 cask "claude"
 # Column-oriented database management system

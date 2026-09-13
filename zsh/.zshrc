@@ -20,3 +20,7 @@ export PATH="/opt/homebrew/opt/python@3.13/libexec/bin:/opt/homebrew/opt/python@
 export PATH="$HOME/.local/bin:$PATH"
 
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+# >>> agterm agent-status >>>
+source '/Users/mburtsev/.config/agterm/agent-status/shell/integration.sh'
+# <<< agterm agent-status <<<
