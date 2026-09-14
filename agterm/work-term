@@ -25,4 +25,7 @@ if [ "${1:-}" = here ]; then
 fi
 
 ssh -o BatchMode=yes -o ConnectTimeout=5 work true || { echo "work-term: laptop unreachable (asleep / other network?)" >&2; exit 1; }
+# agterm sets TERM=xterm-ghostty; without its terminfo the remote zsh draws garbage. Install once.
+ssh -o BatchMode=yes work 'infocmp xterm-ghostty >/dev/null 2>&1' \
+  || infocmp -x xterm-ghostty | ssh -o BatchMode=yes work 'tic -x -'
 for p in $WORK_PROJECTS; do open_session "$p"; done
