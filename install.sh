@@ -196,6 +196,11 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/agterm/ghostty.conf" "$HOME/.config/agterm/ghostty.conf"
   link_file "$DOTFILES_DIR/agterm/keymap.conf" "$HOME/.config/agterm/keymap.conf"
   link_file "$DOTFILES_DIR/agterm/work-term" "$HOME/.local/bin/work-term"
+  # SF Mono for agterm/Ghostty: the system copy (SFNSMono.ttf) is hidden from font enumeration,
+  # and the font-sf-mono cask needs sudo. Terminal.app ships the same .otf files; copy them.
+  for f in /System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/SF-Mono-*.otf; do
+    [[ -f "$HOME/Library/Fonts/$(basename "$f")" ]] || run_or_print cp "$f" "$HOME/Library/Fonts/"
+  done
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
   link_file "$DOTFILES_DIR/git/mr" "$HOME/.local/bin/mr"
 
