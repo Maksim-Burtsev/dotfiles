@@ -38,6 +38,8 @@ brew "libpq"
 brew "maturin"
 # Modern and intuitive terminal-based text editor
 brew "micro"
+# Ambitious Vim-fork focused on extensibility and agility
+brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
 brew "node"
 # AI coding agent, built for the terminal
