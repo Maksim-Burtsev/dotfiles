@@ -14,6 +14,8 @@ unset _zsh_config_dir
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 _zsh_autosuggestions="/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 [ -f "$_zsh_autosuggestions" ] && source "$_zsh_autosuggestions"
+# Ghost text from history. Colour 8 is near-black on light themes (Claude Light), so pin a mid grey.
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#8a8a8a"
 unset _zsh_autosuggestions
 
 export PATH="/opt/homebrew/opt/python@3.13/libexec/bin:/opt/homebrew/opt/python@3.13/bin:$PATH"
