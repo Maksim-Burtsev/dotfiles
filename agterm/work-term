@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Open the work laptop's projects in agterm: one workspace "work", one ssh session per project.
+# Open the work laptop's projects in agterm: one workspace per project, with one ssh session in it.
 # Each session runs on the laptop (under its VPN), so claude / vim / git inside it run there.
 # Needs in ~/.zshrc.local (untracked):
 #   export WORK_PROJECTS="~/src/proj-a ~/src/proj-b"   # remote paths, space-separated
@@ -11,6 +11,6 @@ source "$HOME/.zshrc.local"
 ssh -o BatchMode=yes -o ConnectTimeout=5 work true || { echo "work-term: laptop unreachable (asleep / other network?)" >&2; exit 1; }
 
 for p in $WORK_PROJECTS; do
-  agtermctl session new --workspace-name work --create-workspace --name "${p##*/}" --no-select \
+  agtermctl session new --workspace-name "${p##*/}" --create-workspace --name "${p##*/}" --no-select \
     --command "ssh -t work 'cd $p && exec zsh -l'" >/dev/null
 done
