@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Open the work laptop's projects in agterm: one workspace per project, with one ssh session in it.
 # Each session runs on the laptop (under its VPN), so claude / vim / git inside it run there.
-#   work-term        open every project
-#   work-term here   new session in the current workspace: remote if it is a work project, else local (Cmd+N)
+# A local shell opened later in one of these workspaces (+, Cmd+N) re-execs into ssh itself: see zsh/.zshrc.
 # Needs in ~/.zshrc.local (untracked):
 #   export WORK_PROJECTS="~/Work/a ~/Work/b"   # remote paths, space-separated
 # and a `Host work` block in ~/.ssh/config (key auth, no prompts: agterm runs ssh non-interactively).
@@ -16,13 +15,6 @@ open_session() {  # $1 = remote path
   agtermctl session new --workspace-name "${1##*/}" --create-workspace --name "${1##*/}" --no-select \
     --command "ssh -t work 'cd $1 && exec zsh -l'" >/dev/null
 }
-
-if [ "${1:-}" = here ]; then
-  for p in $WORK_PROJECTS; do
-    [ "${p##*/}" = "${AGT_WORKSPACE_NAME:-}" ] && { open_session "$p"; exit 0; }
-  done
-  exec agtermctl session new --workspace "${AGT_WORKSPACE_ID:-active}" --cwd "${AGT_SESSION_PWD:-$HOME}"  # not a work project: plain local shell
-fi
 
 ssh -o BatchMode=yes -o ConnectTimeout=5 work true || { echo "work-term: laptop unreachable (asleep / other network?)" >&2; exit 1; }
 # agterm sets TERM=xterm-ghostty; without its terminfo the remote zsh draws garbage. Install once.
