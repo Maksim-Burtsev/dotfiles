@@ -198,7 +198,7 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/agterm/work-term" "$HOME/.local/bin/work-term"
   # agterm keeps its theme in its own settings.json (not linkable); set it through the CLI when agterm is up.
   if command -v agtermctl >/dev/null && [[ -S "$HOME/Library/Application Support/agterm/agterm.sock" ]]; then
-    run_or_print agtermctl theme set "Claude Light"
+    run_or_print agtermctl theme set "Catppuccin Latte"
     run_or_print agtermctl theme set --dark none
   fi
   # SF Mono for agterm/Ghostty: the system copy (SFNSMono.ttf) is hidden from font enumeration,
