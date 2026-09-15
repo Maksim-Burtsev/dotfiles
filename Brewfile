@@ -38,6 +38,8 @@ brew "libpq"
 brew "maturin"
 # Modern and intuitive terminal-based text editor
 brew "micro"
+# Remote terminal application
+brew "mosh"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment

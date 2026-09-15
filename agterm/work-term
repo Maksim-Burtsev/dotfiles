@@ -1,24 +1,32 @@
 #!/usr/bin/env bash
-# Open the work laptop's projects in agterm: one workspace per project, with one ssh session in it.
+# Open the work laptop's projects in agterm: one workspace per project, with one mosh session in it.
 # Each session runs on the laptop (under its VPN), so claude / vim / git inside it run there.
-# A local shell opened later in one of these workspaces (+, Cmd+N) re-execs into ssh itself: see zsh/.zshrc.
-# Needs in ~/.zshrc.local (untracked):
+# A local shell opened later in one of these workspaces (+, Cmd+N) re-execs into the same: see zsh/.zshrc.
+# `work-term attach <remote path>` is that session command: a login shell in the project, over mosh.
+# mosh echoes typed keys locally while the Wi-Fi link to the laptop stalls (bursts to 400 ms measured)
+# and keeps the remote shell alive across drops and sleep. The cost: no terminal scrollback (Claude
+# Code's fullscreen TUI scrolls by itself) and no OSC 8 links; plain `ssh -t work` still has both.
+# Needs mosh on both machines, in ~/.zshrc.local (untracked):
 #   export WORK_PROJECTS="~/Work/a ~/Work/b"   # remote paths, space-separated
 # and a `Host work` block in ~/.ssh/config (key auth, no prompts: agterm runs ssh non-interactively)
 # with `ObscureKeystrokeTiming no`: OpenSSH's default keystroke chaff adds ~11 ms to every typed key.
 # ponytail: the remote zsh emits no OSC 7, so agterm's $AGT_SESSION_PWD is the local home;
 # the project path is looked up by workspace name instead.
 set -euo pipefail
+
+if [ "${1:-}" = attach ]; then
+  # agterm runs --command with the GUI environment: no Homebrew PATH, and mosh refuses a non-UTF-8 locale.
+  export PATH="/opt/homebrew/bin:$PATH" LANG=en_US.UTF-8
+  exec mosh --server=/opt/homebrew/bin/mosh-server work -- zsh -lc "cd $2 && exec zsh -l"
+fi
+
 source "$HOME/.zshrc.local"
 [ -n "${WORK_PROJECTS:-}" ] || { echo "work-term: set WORK_PROJECTS in ~/.zshrc.local" >&2; exit 1; }
 
 open_session() {  # $1 = remote path
   agtermctl session new --workspace-name "${1##*/}" --create-workspace --name "${1##*/}" --no-select \
-    --command "ssh -t work 'cd $1 && exec zsh -l'" >/dev/null
+    --command "$HOME/.local/bin/work-term attach '$1'" >/dev/null
 }
 
 ssh -o BatchMode=yes -o ConnectTimeout=5 work true || { echo "work-term: laptop unreachable (asleep / other network?)" >&2; exit 1; }
-# agterm sets TERM=xterm-ghostty; without its terminfo the remote zsh draws garbage. Install once.
-ssh -o BatchMode=yes work 'infocmp xterm-ghostty >/dev/null 2>&1' \
-  || infocmp -x xterm-ghostty | ssh -o BatchMode=yes work 'tic -x -'
 for p in $WORK_PROJECTS; do open_session "$p"; done

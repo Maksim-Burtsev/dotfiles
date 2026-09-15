@@ -25,13 +25,13 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
-# agterm: a local shell opened (+, Cmd+N, duplicate) inside a work-project workspace becomes an ssh
+# agterm: a local shell opened (+, Cmd+N, duplicate) inside a work-project workspace becomes a mosh
 # shell in that project on the laptop. WORK_PROJECTS is set only on the home machine, so this is
 # a no-op on the laptop itself. See agterm/work-term.
 if [ -n "$AGTERM_WORKSPACE_ID" ] && [ -n "$WORK_PROJECTS" ] && [ -z "$SSH_CONNECTION" ]; then
   _ws=$(agtermctl tree --json 2>/dev/null | jq -r --arg id "$AGTERM_WORKSPACE_ID" '.result.tree.workspaces[] | select(.id==$id) | .name')
   for _p in ${=WORK_PROJECTS}; do
-    [ "${_p:t}" = "$_ws" ] && exec ssh -t work "cd $_p && exec zsh -l"
+    [ "${_p:t}" = "$_ws" ] && exec work-term attach "$_p"
   done
   unset _ws _p
 fi
