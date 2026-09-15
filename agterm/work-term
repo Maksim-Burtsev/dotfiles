@@ -4,7 +4,8 @@
 # A local shell opened later in one of these workspaces (+, Cmd+N) re-execs into ssh itself: see zsh/.zshrc.
 # Needs in ~/.zshrc.local (untracked):
 #   export WORK_PROJECTS="~/Work/a ~/Work/b"   # remote paths, space-separated
-# and a `Host work` block in ~/.ssh/config (key auth, no prompts: agterm runs ssh non-interactively).
+# and a `Host work` block in ~/.ssh/config (key auth, no prompts: agterm runs ssh non-interactively)
+# with `ObscureKeystrokeTiming no`: OpenSSH's default keystroke chaff adds ~11 ms to every typed key.
 # ponytail: the remote zsh emits no OSC 7, so agterm's $AGT_SESSION_PWD is the local home;
 # the project path is looked up by workspace name instead.
 set -euo pipefail
