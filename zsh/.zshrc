@@ -20,6 +20,8 @@ unset _zsh_autosuggestions
 
 export PATH="/opt/homebrew/opt/python@3.13/libexec/bin:/opt/homebrew/opt/python@3.13/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+# cargo install: merl from master until its next release (Brewfile's tap merl stays the fallback).
+export PATH="$HOME/.cargo/bin:$PATH"
 
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
