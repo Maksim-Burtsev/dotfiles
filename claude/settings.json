@@ -1,5 +1,6 @@
 {
   "agentPushNotifEnabled": true,
+  "cleanupPeriodDays": 365,
   "enabledPlugins": {
     "diagram-design@diagram-design": true,
     "mattpocock-skills@mattpocock": true,

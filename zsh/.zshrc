@@ -35,5 +35,5 @@ if [ -n "$AGTERM_WORKSPACE_ID" ] && [ -n "$WORK_PROJECTS" ] && [ -z "$SSH_CONNEC
 fi
 
 # >>> agterm agent-status >>>
-source '/Users/mburtsev/.config/agterm/agent-status/shell/integration.sh'
+[ -f "$HOME/.config/agterm/agent-status/shell/integration.sh" ] && source "$HOME/.config/agterm/agent-status/shell/integration.sh"
 # <<< agterm agent-status <<<
