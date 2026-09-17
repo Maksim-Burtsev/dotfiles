@@ -32,3 +32,7 @@ keybind = ctrl+alt+arrow_up=goto_split:up
 keybind = ctrl+alt+arrow_down=goto_split:down
 keybind = ctrl+alt+arrow_left=goto_split:left
 keybind = ctrl+alt+arrow_right=goto_split:right
+
+# Cmd+C copies a mouse selection as before; with none it goes on to the program (kitty
+# protocol, super+c), so merl can copy its own selection on it.
+keybind = performable:cmd+c=copy_to_clipboard:mixed
