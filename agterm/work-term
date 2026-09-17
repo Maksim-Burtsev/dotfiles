@@ -6,7 +6,10 @@
 # mosh echoes typed keys locally while the Wi-Fi link to the laptop stalls (bursts to 400 ms measured)
 # and keeps the remote shell alive across drops and sleep. The cost: no terminal scrollback (Claude
 # Code's fullscreen TUI scrolls by itself) and no OSC 8 links; plain `ssh -t work` still has both.
-# Needs mosh on both machines, in ~/.zshrc.local (untracked):
+# mosh is `maksim-burtsev/tap/mosh-cursor` on BOTH machines: stock mosh drops the cursor-shape
+# sequence, so merl's block/bar cursor showed one shape. Back to `mosh` once a release has
+# mobile-shell/mosh#1355.
+# Needs, in ~/.zshrc.local (untracked):
 #   export WORK_PROJECTS="~/Work/a ~/Work/b"   # remote paths, space-separated
 # and a `Host work` block in ~/.ssh/config (key auth, no prompts: agterm runs ssh non-interactively)
 # with `ObscureKeystrokeTiming no`: OpenSSH's default keystroke chaff adds ~11 ms to every typed key.

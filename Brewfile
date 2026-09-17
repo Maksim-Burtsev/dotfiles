@@ -38,8 +38,6 @@ brew "libpq"
 brew "maturin"
 # Modern and intuitive terminal-based text editor
 brew "micro"
-# Remote terminal application
-brew "mosh"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
@@ -80,8 +78,10 @@ brew "wget"
 brew "yq"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
-# Read-only code navigator for the terminal
+# Keyboard-only code navigator for the terminal
 brew "maksim-burtsev/tap/merl", trusted: true
+# Remote terminal application, with cursor shape (DECSCUSR) pass-through
+brew "maksim-burtsev/tap/mosh-cursor", trusted: true
 # Terminal on libghostty with a workspace/session sidebar
 cask "umputun/apps/agterm", trusted: true
 # Anthropic's official Claude AI desktop app
