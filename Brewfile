@@ -1,7 +1,11 @@
 tap "maksim-burtsev/tap"
 tap "umputun/apps"
+# Asciicast to GIF converter
+brew "agg"
 # List ASCII idiomatic names and octal/decimal code-point forms
 brew "ascii"
+# Record and share terminal sessions
+brew "asciinema"
 # Code searching, linting, rewriting
 brew "ast-grep"
 # Clone of cat(1) with syntax highlighting and Git integration
