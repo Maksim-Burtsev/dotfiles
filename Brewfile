@@ -10,6 +10,8 @@ brew "asciinema"
 brew "ast-grep"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Cargo plugin for linting your dependencies
+brew "cargo-deny"
 # Official ODBC driver implementation for accessing ClickHouse as a data source
 brew "clickhouse-odbc"
 # Cross-platform make
