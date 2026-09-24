@@ -218,7 +218,7 @@ link_dotfiles() {
   # the laptop gets the folder through Syncthing without .git.
   if [[ -d "$HOME/open-source/second-brain/.git" ]]; then
     run_or_print mkdir -p "$HOME/Library/Logs/second-brain"
-    for job in pull; do
+    for job in pull nightly; do
       link_file "$DOTFILES_DIR/second-brain/dev.mburtsev.second-brain-$job.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.second-brain-$job.plist"
     done
   fi
