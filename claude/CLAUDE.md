@@ -18,6 +18,7 @@ Where things go:
 | iTerm | `iterm/` — export the profile manually |
 
 `zsh/`, `git/`, `vscode/`, `claude/`, `hammerspoon/` are symlinked into `$HOME`: editing the file in `$HOME` **is** editing the repo, all that is left is to commit.
+Exception: scheduled tasks in `~/.claude/scheduled-tasks` are copies, not symlinks (the desktop app refuses symlinked task files): editing one there does not change the repo.
 Everything else has no sync — a command applied live has to be duplicated as a line in the matching script.
 
 Order: apply live → reflect in the repo → `./sync.sh` (if you touched brew or Claude settings through the UI) → `git commit` → `git push`.
