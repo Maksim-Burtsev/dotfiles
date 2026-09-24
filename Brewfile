@@ -68,6 +68,8 @@ brew "python@3.13"
 brew "ruff"
 # Safe, concurrent, practical language
 brew "rust"
+# Open source continuous file synchronization application
+brew "syncthing", restart_service: :changed
 # User interface to the TELNET protocol
 brew "telnet"
 # Terminal multiplexer
