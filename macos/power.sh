@@ -9,7 +9,9 @@ set -euo pipefail
 # displaysleep — когда гаснет экран, sleep — когда засыпает сама система.
 # sleep 0: the system never sleeps, so the Remote Control server
 # (claude/dev.mburtsev.claude-remote-control.plist) stays reachable from the phone.
-sudo pmset -a displaysleep 30 sleep 0
+# autorestart 1: after a power loss the Mac boots by itself; FileVault still waits for the
+# password, and after that login the Batcave LaunchAgent (~/open-source/batcave) starts again.
+sudo pmset -a displaysleep 30 sleep 0 autorestart 1
 
 # No unattended macOS update installs: an update reboots the machine at night, and
 # after a reboot FileVault waits for the password, so the phone loses the Mac.
@@ -26,5 +28,5 @@ sysadminctl -screenLock off -password -
 
 echo
 echo "Готово. Текущие значения:"
-pmset -g custom | grep -E '(displaysleep|[^y]sleep)'
+pmset -g custom | grep -E '(displaysleep|[^y]sleep|autorestart)'
 sysadminctl -screenLock status
