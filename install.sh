@@ -185,14 +185,6 @@ link_dotfiles() {
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
     link_file "$HOME/open-source/pitwall/skills/pitwall" "$HOME/.claude/skills/pitwall"
   fi
-  # Scheduled tasks are copied, not linked: the desktop app refuses to open a
-  # task file through a symlink ("symlink detected before open"). ./sync.sh
-  # copies edits back into the repo.
-  mkdir -p "$HOME/.claude/scheduled-tasks"
-  if [[ ! -e "$HOME/.claude/scheduled-tasks/mail-triage" || -L "$HOME/.claude/scheduled-tasks/mail-triage" ]]; then
-    rm -f "$HOME/.claude/scheduled-tasks/mail-triage"
-    cp -R "$DOTFILES_DIR/claude/scheduled-tasks/mail-triage" "$HOME/.claude/scheduled-tasks/mail-triage"
-  fi
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/agterm/ghostty.conf" "$HOME/.config/agterm/ghostty.conf"
@@ -218,7 +210,7 @@ link_dotfiles() {
   # the laptop gets the folder through Syncthing without .git.
   if [[ -d "$HOME/open-source/second-brain/.git" ]]; then
     run_or_print mkdir -p "$HOME/Library/Logs/second-brain"
-    for job in pull nightly; do
+    for job in pull nightly brief; do
       link_file "$DOTFILES_DIR/second-brain/dev.mburtsev.second-brain-$job.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.second-brain-$job.plist"
     done
   fi
