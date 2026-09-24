@@ -33,3 +33,5 @@ Both files can show a phantom ` M` in `git status` (stat-based, ignores clean fi
 
 Do not commit temporary or debugging changes — say so to the user explicitly instead of committing.
 The checkout is shared with parallel sessions: re-read a file before editing it, and commit only your own changes (`git add <paths>`, not `git add -A`).
+
+@~/open-source/second-brain/system/claude.md
