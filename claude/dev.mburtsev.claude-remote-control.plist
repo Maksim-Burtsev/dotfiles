@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Remote Control server: the "Mac mini" entry in the Claude app's Code tab, where new
+  sessions on this machine start from the phone. zsh -lic gives them the same PATH as a
+  terminal. KeepAlive restarts the server, which exits after ~10 min without network.
+  stdout is the server's status redraw (~40 MB/day), so only stderr is logged.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>dev.mburtsev.claude-remote-control</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string><string>-lic</string>
+    <string>exec claude remote-control --name "Mac mini" --permission-mode bypassPermissions</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/mburtsev/open-source</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>/dev/null</string>
+  <key>StandardErrorPath</key><string>/Users/mburtsev/Library/Logs/claude-remote-control.log</string>
+</dict>
+</plist>

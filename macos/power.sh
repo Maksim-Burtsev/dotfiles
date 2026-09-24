@@ -7,7 +7,14 @@ set -euo pipefail
 
 # Mac mini всегда от сети, батареи нет, но -a покрывает все источники питания.
 # displaysleep — когда гаснет экран, sleep — когда засыпает сама система.
-sudo pmset -a displaysleep 30 sleep 60
+# sleep 0: the system never sleeps, so the Remote Control server
+# (claude/dev.mburtsev.claude-remote-control.plist) stays reachable from the phone.
+sudo pmset -a displaysleep 30 sleep 0
+
+# No unattended macOS update installs: an update reboots the machine at night, and
+# after a reboot FileVault waits for the password, so the phone loses the Mac.
+# Updates still download; install them from System Settings when it suits.
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool false
 
 # Пробуждение без пароля: после сна сразу возвращаемся ровно туда, где заснули.
 # `defaults write com.apple.screensaver askForPassword` начиная с Ventura
