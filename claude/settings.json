@@ -106,6 +106,7 @@
       }
     ]
   },
+  "inputNeededNotifEnabled": true,
   "permissions": {
     "allow": [
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__search_threads",
@@ -132,6 +133,7 @@
       "Bash(python3:*)"
     ]
   },
+  "remoteControlAtStartup": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "auto",

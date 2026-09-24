@@ -178,6 +178,8 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
   link_file "$DOTFILES_DIR/claude/skills/design-taste-frontend" "$HOME/.claude/skills/design-taste-frontend"
+  # Remote Control server for the phone; launchd picks it up at the next login.
+  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control.plist"
 
   # pitwall lives in its own repo; link it only if that checkout is present.
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
