@@ -110,6 +110,8 @@ cask "iterm2"
 cask "libreoffice"
 # Replacement for Docker Desktop
 cask "orbstack"
+# Mesh VPN based on WireGuard
+cask "tailscale-app"
 # Open-source code editor
 cask "visual-studio-code"
 vscode "adpyke.codesnap"
