@@ -214,6 +214,15 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
   link_file "$DOTFILES_DIR/vdirsyncer/dev.mburtsev.vdirsyncer.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.vdirsyncer.plist"
 
+  # Second brain jobs run only on the machine that holds the brain's git history (the Mac mini);
+  # the laptop gets the folder through Syncthing without .git.
+  if [[ -d "$HOME/open-source/second-brain/.git" ]]; then
+    run_or_print mkdir -p "$HOME/Library/Logs/second-brain"
+    for job in pull; do
+      link_file "$DOTFILES_DIR/second-brain/dev.mburtsev.second-brain-$job.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.second-brain-$job.plist"
+    done
+  fi
+
   # Хуки не переносятся при clone, поэтому включает их установщик.
   run_or_print git -C "$DOTFILES_DIR" config core.hooksPath .githooks
 
