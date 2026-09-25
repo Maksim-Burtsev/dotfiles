@@ -38,14 +38,14 @@ The checkout is shared with parallel sessions: re-read a file before editing it,
 
 Kimi Code (subscription until about 25.10) is a second pair of hands: `kimi-task "brief"` runs one task in the current directory on `kimi-for-coding` and prints Kimi's report. You stay the lead: you decide what to build, Kimi types it, you review it. Quality outranks savings: work you cannot verify, keep.
 
-Until 28.09 the Claude weekly limit is almost spent, so Kimi writes the bulk of the code. On 28.09 revise this section with the user; the plan is to hand Kimi design and artifacts first.
+Delegate: tests, boilerplate, refactors by an agreed plan, mechanical edits across files, code search and reading (ask for `file:line` references). Keep: architecture and code design decisions, specs, review, tricky logic (concurrency, migrations, money, permissions), the tracker and MRs.
 
-Delegate: tests, boilerplate, refactors by an agreed plan, mechanical edits across files, code search and reading (ask for `file:line` references). Keep: architecture and design decisions, specs, review, tricky logic (concurrency, migrations, money, permissions), the tracker and MRs.
+Until 28.09 the Claude weekly limit is almost spent, so Kimi writes the bulk of the code: hand it everything on the Delegate list. From 28.09 Kimi owns the visuals (UI layout and styling, diagrams, HTML artifacts) and takes from the Delegate list whatever it does at least as well as you; the rest you do yourself.
 
 1. **Brief.** Kimi sees the repo and its `AGENTS.md`, nothing from this chat or your memory. Write a self-contained brief: goal, the decided design, files to touch, acceptance criteria, checks to run, facts it cannot find by looking (env quirks, decisions from chat). One task per call.
 2. **Isolate.** Start from a clean tree on the task branch; someone's uncommitted work or a second Kimi run in the same repo means a git worktree. Kimi's git writes are blocked by a hook, so its changes arrive uncommitted.
 3. **Run** from the repo dir: `kimi-task "brief" 2>/tmp/kimi-<slug>.log`, in the background if it may take more than a couple of minutes. The log holds Kimi's thinking; open it only when the report does not explain a failure.
-4. **Verify.** Read the whole `git diff` yourself, not the report, and rerun the checks. Hunt for scope creep, weakened or deleted tests, invented APIs, hardcoded values, drift from the surrounding style. Done = a diff you would sign as your own, green checks you ran yourself.
+4. **Verify.** Read the whole `git diff` yourself, not the report, and rerun the checks; for visuals, look at the rendered result. Hunt for scope creep, weakened or deleted tests, invented APIs, hardcoded values, drift from the surrounding style. Done = a diff you would sign as your own, green checks you ran yourself.
 5. **Fix** small things yourself; send larger ones back with concrete notes: `kimi-task "notes" -c` continues Kimi's last session in that dir. After two failed rounds, finish it yourself.
 
 @~/open-source/second-brain/system/claude.md
