@@ -1,0 +1,8 @@
+
+# kimi-task: under delegation Kimi edits and tests; git history, pushes and MRs stay with Claude.
+# Static deny rules are not enforced in `kimi -p`, a PreToolUse hook is.
+[[hooks]]
+event = "PreToolUse"
+matcher = "Bash"
+command = '[ -z "$KIMI_TASK" ] || ! jq -r ".tool_input.command // empty" | grep -Eq "git( +-[Cc] +[^ ]+)* +(push|commit|reset|checkout|switch|restore|clean|stash|rebase|merge|cherry-pick)\b|glab " || { echo "kimi-task: git write operations are not allowed, leave changes uncommitted in the working tree" >&2; exit 2; }'
+timeout = 5
