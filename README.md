@@ -12,6 +12,7 @@ Personal macOS dotfiles and bootstrap scripts.
 - `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.
 - `iterm/` - exported iTerm profile JSON for manual import.
 - `mailctl/` - `mailctl`, an IMAP client for agents and for hand use; symlinked into `~/.local/bin`. Mailboxes are described in `~/.config/mailctl/accounts.toml` (not tracked), passwords live in the Keychain under the `mailctl` service.
+- `kimi/` - `kimi-task`, Claude's way to hand one task to Kimi Code (`kimi -p` in the current directory), symlinked into `~/.local/bin`. `guard.toml` is a hook the script appends to `~/.kimi-code/config.toml` on first run: under `kimi-task` Kimi cannot commit, push, stash or switch branches.
 - `macos/` - `defaults.sh` for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control. `power.sh` for sleep timers and the lock screen; it is separate because it needs `sudo` and the login password.
 - `vscode/` - VSCode settings and keybindings.
 - `zsh/` - zsh startup config (`.zshrc`, `.zprofile`) and aliases.

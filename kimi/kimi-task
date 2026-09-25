@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# kimi-task "brief" [kimi flags]: one task for Kimi Code in the current directory, delegated by Claude.
+# stdout is Kimi's report; its thinking and the resume hint go to stderr.
+# Extra flags go to kimi, e.g. -c continues the last session in this directory.
+set -euo pipefail
+
+[[ -n ${1:-} ]] || { echo 'usage: kimi-task "brief" [kimi flags]' >&2; exit 2; }
+brief=$1; shift
+
+# config.toml also holds Kimi's login-managed provider, so the git guard is appended, not linked.
+config="$HOME/.kimi-code/config.toml"
+grep -q KIMI_TASK "$config" || cat "$(dirname "$(readlink -f "$0")")/guard.toml" >> "$config"
+
+export KIMI_TASK=1
+exec "$HOME/.kimi-code/bin/kimi" -p "You are a delegate of Claude, which wrote this brief and will review your diff and rerun the checks.
+- Do exactly the task in the brief; code it does not mention stays as it is.
+- Read the repo's AGENTS.md first and follow it; match the style of the surrounding code.
+- Leave every change uncommitted in the working tree.
+- Run the checks the brief names (or the tests closest to your change) and report their real output.
+- If the brief is ambiguous, contradicts the code, or you get stuck, stop and say what is missing.
+- Your last message is the whole report: files changed, commands run with results, open questions, anything left undone.
+
+Brief:
+$brief" "$@"

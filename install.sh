@@ -201,6 +201,7 @@ link_dotfiles() {
     [[ -f "$HOME/Library/Fonts/$(basename "$f")" ]] || run_or_print cp "$f" "$HOME/Library/Fonts/"
   done
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
+  link_file "$DOTFILES_DIR/kimi/kimi-task" "$HOME/.local/bin/kimi-task"
 
   # Yandex 360 <-> Google Calendar two-way sync (see vdirsyncer/README.md).
   link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
