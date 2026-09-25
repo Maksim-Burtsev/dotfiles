@@ -2,7 +2,6 @@
   "agentPushNotifEnabled": true,
   "cleanupPeriodDays": 365,
   "enabledPlugins": {
-    "diagram-design@diagram-design": true,
     "mattpocock-skills@mattpocock": true,
     "ponytail@ponytail": true,
     "punchcard@punchcard": true,
@@ -12,12 +11,6 @@
     "CLAUDE_CODE_NATIVE_CURSOR": "1"
   },
   "extraKnownMarketplaces": {
-    "diagram-design": {
-      "source": {
-        "repo": "cathrynlavery/diagram-design",
-        "source": "github"
-      }
-    },
     "mattpocock": {
       "source": {
         "repo": "mattpocock/skills",
