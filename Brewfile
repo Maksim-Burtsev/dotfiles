@@ -16,6 +16,8 @@ brew "cargo-deny"
 brew "clickhouse-odbc"
 # Cross-platform make
 brew "cmake"
+# Secure runtime for JavaScript and TypeScript
+brew "deno"
 # Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # Command-line fuzzy finder written in Go
