@@ -48,4 +48,14 @@ Until 28.09 the Claude weekly limit is almost spent, so Kimi writes the bulk of 
 4. **Verify.** Read the whole `git diff` yourself, not the report, and rerun the checks; for visuals, look at the rendered result. Hunt for scope creep, weakened or deleted tests, invented APIs, hardcoded values, drift from the surrounding style. Done = a diff you would sign as your own, green checks you ran yourself.
 5. **Fix** small things yourself; send larger ones back with concrete notes: `kimi-task "notes" -c` continues Kimi's last session in that dir. After two failed rounds, finish it yourself.
 
+# The `agent-ok` label
+
+In a repo that has it, `agent-ok` marks an issue that is settled: a fresh agent given only its link can do it without asking the owner anything, and the owner never re-reads it. It is not delegation: the owner has already made every decision, the label saves them a second read. Put it yourself:
+
+- on an issue you file after the owner settled it in chat, with no question to them left;
+- on an open issue once any chat settles its remaining details;
+- on a bug fix whose right behaviour is obvious and that changes no key, screen, animation or default.
+
+Before labelling, write every decision from the chat into the issue: the next agent sees only the issue. An issue that still holds a question to the owner gets no label. When an issue looks settled but is unlabelled, offer in one line to label it; do not label it silently.
+
 @~/open-source/second-brain/system/claude.md
