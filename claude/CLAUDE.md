@@ -34,6 +34,10 @@ Both files can show a phantom ` M` in `git status` (stat-based, ignores clean fi
 Do not commit temporary or debugging changes — say so to the user explicitly instead of committing.
 The checkout is shared with parallel sessions: re-read a file before editing it, and commit only your own changes (`git add <paths>`, not `git add -A`).
 
+# Finishing a task
+
+When a task is finished, make it unmistakable whether this chat is done: either that nothing is left for me and I can close it, or exactly what you need from me and where. Use your own words. I should never have to ask.
+
 # Delegating to Kimi
 
 Kimi Code (subscription until about 25.10) is a second pair of hands: `kimi-task "brief"` runs one task in the current directory on `kimi-for-coding` and prints Kimi's report. You stay the lead: you decide what to build, Kimi types it, you review it. Quality outranks savings: work you cannot verify, keep.
