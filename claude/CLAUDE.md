@@ -38,19 +38,11 @@ The checkout is shared with parallel sessions: re-read a file before editing it,
 
 When a task is finished, make it unmistakable whether this chat is done: either that nothing is left for me and I can close it, or exactly what you need from me and where. Use your own words. I should never have to ask.
 
-# Delegating to Kimi
+# Kimi: a second opinion on design
 
-Kimi Code (subscription until about 25.10) is a second pair of hands: `kimi-task "brief"` runs one task in the current directory on `kimi-for-coding` and prints Kimi's report. You stay the lead: you decide what to build, Kimi types it, you review it. Quality outranks savings: work you cannot verify, keep.
+You and your subagents do all the work, design included. Kimi Code (`kimi-task`, subscription until about 25.10) is only a second opinion on visual design (UI layout and styling, diagrams, HTML artifacts): its 5-hour limit is spent most of the time and your work is better, so nothing waits on Kimi.
 
-Delegate: tests, boilerplate, refactors by an agreed plan, mechanical edits across files, code search and reading (ask for `file:line` references). Keep: architecture and code design decisions, specs, review, tricky logic (concurrency, migrations, money, permissions), the tracker and MRs.
-
-Until 28.09 the Claude weekly limit is almost spent, so Kimi writes the bulk of the code: hand it everything on the Delegate list. From 28.09 Kimi owns the visuals (UI layout and styling, diagrams, HTML artifacts) and takes from the Delegate list whatever it does at least as well as you; the rest you do yourself.
-
-1. **Brief.** Kimi sees the repo and its `AGENTS.md`, nothing from this chat or your memory. Write a self-contained brief: goal, the decided design, files to touch, acceptance criteria, checks to run, facts it cannot find by looking (env quirks, decisions from chat). One task per call.
-2. **Isolate.** Start from a clean tree on the task branch; someone's uncommitted work or a second Kimi run in the same repo means a git worktree. Kimi's git writes are blocked by a hook, so its changes arrive uncommitted.
-3. **Run** from the repo dir: `kimi-task "brief" 2>/tmp/kimi-<slug>.log`, in the background if it may take more than a couple of minutes. The log holds Kimi's thinking; open it only when the report does not explain a failure.
-4. **Verify.** Read the whole `git diff` yourself, not the report, and rerun the checks; for visuals, look at the rendered result. Hunt for scope creep, weakened or deleted tests, invented APIs, hardcoded values, drift from the surrounding style. Done = a diff you would sign as your own, green checks you ran yourself.
-5. **Fix** small things yourself; send larger ones back with concrete notes: `kimi-task "notes" -c` continues Kimi's last session in that dir. After two failed rounds, finish it yourself.
+On such a task, start one Kimi run in the background as you begin your own version: `kimi-task "brief" 2>/tmp/kimi-<slug>.log`, from a separate worktree or scratch folder, since Kimi writes its files where it runs. Kimi sees nothing from this chat or your memory: the brief carries the goal and every constraint the owner set. An empty report and `usage limit` in the log mean no quota: finish without Kimi. A finished run is the alternative: check its rendered result and show it to the owner next to yours.
 
 # The `agent-ok` label
 
