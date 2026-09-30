@@ -29,3 +29,7 @@ local front = hs.application.frontmostApplication()
 if front and front:name() == "Claude" then hotkey:enable() end
 
 require("hs.ipc")  -- для `hs -c` из терминала
+
+-- Lookout: focus-block timer (⌃⌥T) and a Mattermost alert for urgent messages only; see lookout.lua.
+-- Global, so that `hs -c 'lookout.check()'` works from a terminal.
+lookout = dofile(hs.fs.pathToAbsolute(hs.configdir .. "/init.lua"):match("(.*/)") .. "lookout.lua")
