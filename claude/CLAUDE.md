@@ -54,4 +54,8 @@ In a repo that has it, `agent-ok` marks an issue that is settled: a fresh agent 
 
 Before labelling, write every decision from the chat into the issue: the next agent sees only the issue. An issue that still holds a question to the owner gets no label. When an issue looks settled but is unlabelled, offer in one line to label it; do not label it silently.
 
+# merl
+
+merl is my code editor. When I ask to prepare something in merl (branches to review, a project to read), run `merl --for-agents` first and do what it says.
+
 @~/open-source/second-brain/system/claude.md
