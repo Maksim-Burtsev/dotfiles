@@ -32,6 +32,8 @@ brew "git-filter-repo"
 brew "gitleaks"
 # Task is a task runner/build tool that aims to be simpler and easier to use
 brew "go-task"
+# Database migrations CLI tool
+brew "golang-migrate"
 # Fast linters runner for Go
 brew "golangci-lint"
 # GNU grep, egrep and fgrep
