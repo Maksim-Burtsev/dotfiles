@@ -134,7 +134,9 @@
       "Bash(head:*)",
       "Bash(sed:*)",
       "Bash(grep:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh issue edit:*)"
     ]
   },
   "remoteControlAtStartup": true,
