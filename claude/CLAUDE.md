@@ -38,6 +38,17 @@ The checkout is shared with parallel sessions: re-read a file before editing it,
 
 When a task is finished, make it unmistakable whether this chat is done: either that nothing is left for me and I can close it, or exactly what you need from me and where. Use your own words. I should never have to ask.
 
+I often read the end of a long report on the phone or only its first lines: say done or what you need from me at the top. A turn that ends waiting on my answers repeats the questions in full, not "see Q9–Q15 above".
+
+# How to work with me
+
+- A result for me is a link (artifact, PR, issue), never a local path.
+- A small fix inside the task (a stale line, the follow-up issue the repo's rules call for) is done, not offered as "say yes and I'll…".
+- Facts about this machine (screen, font, terminal size, what runs) are read, never asked.
+- When you stop without finishing, comment on the issue: the branch, where it stands, and what unblocks it. A chat is not where state lives.
+- When I interrupt with a question, answer it and go back to the interrupted work.
+- In a stack of PRs, merge the base without `--delete-branch`: deleting its branch closes the PR stacked on it for good.
+
 # Kimi: a second opinion on design
 
 You and your subagents do all the work, design included. Kimi Code (`kimi-task`, subscription until about 25.10) is only a second opinion on visual design (UI layout and styling, diagrams, HTML artifacts): its 5-hour limit is spent most of the time and your work is better, so nothing waits on Kimi.
