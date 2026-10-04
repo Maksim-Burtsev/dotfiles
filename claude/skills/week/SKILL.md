@@ -32,7 +32,7 @@ The event description is written for the moment the block starts, read by someon
 - what done looks like;
 - everything needed to start: links, tickets, paths, people, the first step.
 
-Title: `<project>: <action>`. An **agent block** is titled `🤖 <project>: <action>` and its description is a self-contained task prompt naming the project directory, what the agent decides alone and what it brings back to the owner. Reminder: a popup at the start. A block that only structures the owner's own time is marked free (transparent), so it never reads as busy to anyone; a real appointment stays busy.
+Title: `<project>: <action>`. An **agent block** is titled `🤖 <project>: <action>` and its description is a self-contained task prompt naming the project directory, what the agent decides alone and what it brings back to the owner. Reminder: a popup at the start. An all-day event (a trip, a vacation) takes midnight UTC (`2026-10-10T00:00:00Z`, end exclusive): the Google Calendar connector reads a local midnight like `+04:00` as the previous day. A block that only structures the owner's own time is marked free (transparent), so it never reads as busy to anyone; a real appointment stays busy.
 
 ## Starting a block
 
