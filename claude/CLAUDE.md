@@ -65,6 +65,14 @@ In a repo that has it, `agent-ok` marks an issue that is settled: a fresh agent 
 
 Before labelling, write every decision from the chat into the issue: the next agent sees only the issue. An issue that still holds a question to the owner gets no label. When an issue looks settled but is unlabelled, offer in one line to label it; do not label it silently.
 
+# Compass and calendar
+
+@~/open-source/batcave/config/compass.md
+
+The compass above is the *why*: my goals for the next months, this week's outcomes, what is "not now", and what agents may pick up on their own. Weigh plans, task picks and recommendations against it so I don't re-explain; when a request pulls against it, say so once and carry on. When I name a new goal, priority or "not now", update the file. It is private: its contents never go into a repo, PR, issue or a message to anyone else.
+
+The calendar is the *when*. My personal Google calendar (primary) is mine and the agents' to fill; the work calendar (Tetrika) is read-only. An event's description is its brief: whoever opens it at that time, me or an agent, starts without asking. Weekly planning and turning a brain dump into calendar blocks: the `week` skill.
+
 # merl
 
 merl is my code editor. When I ask to prepare something in merl (branches to review, a project to read), run `merl --for-agents` first and do what it says.
