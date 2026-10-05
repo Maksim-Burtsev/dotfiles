@@ -14,6 +14,8 @@ brew "bat"
 brew "cargo-deny"
 # Official ODBC driver implementation for accessing ClickHouse as a data source
 brew "clickhouse-odbc"
+# Language Server (LSP) for Clojure
+brew "clojure-lsp"
 # Cross-platform make
 brew "cmake"
 # Secure runtime for JavaScript and TypeScript
@@ -48,6 +50,8 @@ brew "libpq"
 brew "maturin"
 # Modern and intuitive terminal-based text editor
 brew "micro"
+# Modern programming language in the Lisp/Scheme family
+brew "minimal-racket"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
@@ -90,7 +94,7 @@ brew "wget"
 brew "yq"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
-# Keyboard-only code navigator for the terminal
+# Terminal code navigator: read a project, review a branch, fix a line
 brew "maksim-burtsev/tap/merl", trusted: true
 # Remote terminal application, with cursor shape (DECSCUSR) pass-through
 brew "maksim-burtsev/tap/mosh-cursor", trusted: true
@@ -100,7 +104,7 @@ cask "umputun/apps/agterm", trusted: true
 cask "claude"
 # Column-oriented database management system
 cask "clickhouse"
-# Menu bar usage monitor for Codex and Claude
+# Menu bar app for tracking agentic coding limits and usage
 cask "codexbar"
 # Web browser
 cask "firefox"
