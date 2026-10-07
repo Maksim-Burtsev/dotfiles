@@ -92,7 +92,7 @@ defaults write com.apple.dock largesize -int 128
 defaults write com.apple.dock show-recents -bool false
 defaults write com.apple.dock mineffect -string "scale"
 defaults write com.apple.dock minimize-to-application -bool false
-defaults write com.apple.dock mru-spaces -bool true
+defaults write com.apple.dock mru-spaces -bool false  # keep Spaces in a fixed order
 
 # Mission Control
 # Cmd+Tab делает приложение активным, но не утаскивает на его Space: переход
