@@ -217,6 +217,13 @@ link_dotfiles() {
     done
   fi
 
+  # Work part of the private compass and queued one-shot jobs go to the work laptop from the
+  # machine that holds Batcave (the Mac mini); see work-sync/work-sync.sh.
+  if [[ -d "$HOME/open-source/batcave/.git" ]]; then
+    run_or_print mkdir -p "$HOME/Library/Logs/work-sync" "$HOME/.local/share/work-sync/once"
+    link_file "$DOTFILES_DIR/work-sync/dev.mburtsev.work-sync.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.work-sync.plist"
+  fi
+
   # Хуки не переносятся при clone, поэтому включает их установщик.
   run_or_print git -C "$DOTFILES_DIR" config core.hooksPath .githooks
 
