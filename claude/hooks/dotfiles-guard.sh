@@ -11,7 +11,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/open-source/dotfiles}"
 MARKER_DIR="$HOME/.claude/.dotfiles-guard"
 
 # Команды, после которых состояние машины разошлось с репой.
-SYSTEM_MUTATORS='defaults (write|delete)|pmset|sysadminctl|nvram|chflags|launchctl (load|unload|enable|disable|bootstrap|bootout)|brew (install|uninstall|remove|tap|untap)|mas install|npm (install|i) +(-g|--global)|uv tool (install|uninstall)|go install|pipx install|code --install-extension'
+SYSTEM_MUTATORS='defaults (write|delete)|pmset|sysadminctl|nvram|chflags|launchctl (load|unload|enable|disable|bootstrap|bootout)|brew (install|uninstall|remove|untap)|brew tap +[[:alnum:]]|mas install|npm (install|i) +(-g|--global)|uv tool (install|uninstall)|go install|pipx install|code --install-extension'
 
 json_escape() { printf '%s' "$1" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
 
@@ -25,6 +25,10 @@ post)
   # Только в позиции команды (начало строки или после ; && || |), иначе ловим
   # упоминания вроде "brew install" внутри текста, который агент куда-то пишет.
   printf '%s' "$cmd" | grep -Eq "(^|[;&|]|&&|\|\|)[[:space:]]*($SYSTEM_MUTATORS)" || exit 0
+
+  # Метка для stop: эта сессия меняла машину, значит грязь в репе может быть её.
+  session="$(printf '%s' "$input" | jq -r '.session_id // "unknown"' 2>/dev/null)"
+  mkdir -p "$MARKER_DIR" && : > "$MARKER_DIR/$session.touched"
 
   msg="Эта команда изменила состояние машины. Настройки ОС живут в $DOTFILES_DIR — отрази изменение там, пока не забыл: правь соответствующий файл (macos/defaults.sh, macos/power.sh, Brewfile через ./sync.sh, zsh/, git/, vscode/ и т.д.), затем закоммить и запушь. Если изменение временное или отладочное — скажи об этом пользователю явно вместо коммита."
   printf '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":%s},"suppressOutput":true}\n' "$(json_escape "$msg")"
@@ -44,9 +48,36 @@ stop)
   ahead="$(git -C "$DOTFILES_DIR" log --oneline @{u}..HEAD 2>/dev/null)"
   [[ -z "$dirty" && -z "$ahead" ]] && exit 0
 
-  # Блокируем один раз за сессию: чекаут общий с параллельными сессиями,
-  # и чужая грязь не должна долбить бесконечно.
+  # Чекаут общий с параллельными сессиями: блокируем только сессию, которая сама
+  # меняла машину (метка от post) или писала файлы репы через Edit/Write (свои и
+  # сабагентов), и только один раз. Чужая грязь — не её дело.
   session="$(printf '%s' "$input" | jq -r '.session_id // "unknown"' 2>/dev/null)"
+  transcript="$(printf '%s' "$input" | jq -r '.transcript_path // empty' 2>/dev/null)"
+  if [[ ! -f "$MARKER_DIR/$session.touched" ]]; then
+    python3 - "$transcript" "$DOTFILES_DIR" <<'PY' || exit 0
+import glob, json, os, sys
+t, d = sys.argv[1], os.path.realpath(sys.argv[2])
+if not t:
+    sys.exit(1)
+for f in [t] + glob.glob(t[:-len(".jsonl")] + "/subagents/*.jsonl"):
+    try:
+        lines = open(f)
+    except OSError:
+        continue
+    for line in lines:
+        try:
+            c = (json.loads(line).get("message") or {}).get("content")
+        except ValueError:
+            continue
+        for b in c if isinstance(c, list) else []:
+            i = b.get("input") if isinstance(b, dict) and b.get("type") == "tool_use" \
+                and b.get("name") in ("Edit", "MultiEdit", "Write", "NotebookEdit") else None
+            p = isinstance(i, dict) and (i.get("file_path") or i.get("notebook_path"))
+            if p and os.path.realpath(os.path.expanduser(p)).startswith(d + os.sep):
+                sys.exit(0)
+sys.exit(1)
+PY
+  fi
   mkdir -p "$MARKER_DIR"
   marker="$MARKER_DIR/$session"
   [[ -f "$marker" ]] && exit 0
