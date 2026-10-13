@@ -191,10 +191,11 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/agterm/ghostty.conf" "$HOME/.config/agterm/ghostty.conf"
   link_file "$DOTFILES_DIR/agterm/keymap.conf" "$HOME/.config/agterm/keymap.conf"
+  link_file "$DOTFILES_DIR/agterm/themes" "$HOME/.config/agterm/themes"
   link_file "$DOTFILES_DIR/agterm/work-term" "$HOME/.local/bin/work-term"
-  # agterm keeps its theme in its own settings.json (not linkable); set it through the CLI when agterm is up.
+  # agterm's own theme (settings.json, not linkable) is cleared so ghostty.conf's seneca-light applies.
   if command -v agtermctl >/dev/null && [[ -S "$HOME/Library/Application Support/agterm/agterm.sock" ]]; then
-    run_or_print agtermctl theme set "Iceberg Light"
+    run_or_print agtermctl theme set
     run_or_print agtermctl theme set --dark none
   fi
   # SF Mono for agterm/Ghostty: the system copy (SFNSMono.ttf) is hidden from font enumeration,

@@ -1,0 +1,24 @@
+# seneca: merl's dark theme (after huyvohcmc/atlas.vim). Grey text on #212121;
+# the ANSI colours are muted so git, ls and errors still read apart.
+background = #212121
+foreground = #c0c0c0
+cursor-color = #c0c0c0
+cursor-text = #212121
+selection-background = #444444
+selection-foreground = #ffffff
+palette = 0=#323232
+palette = 1=#c27070
+palette = 2=#8aab7a
+palette = 3=#c2a86a
+palette = 4=#7a9ac2
+palette = 5=#a888b8
+palette = 6=#7ab0b0
+palette = 7=#c0c0c0
+palette = 8=#666666
+palette = 9=#d08080
+palette = 10=#9abb8a
+palette = 11=#d0b87a
+palette = 12=#8aaad0
+palette = 13=#b898c8
+palette = 14=#8ac0c0
+palette = 15=#ffffff
