@@ -21,6 +21,11 @@ PATTERN = re.compile(
 )
 
 
+def log(line):
+    with open(os.path.expanduser("~/Library/Logs/ytstrip/strip.log"), "a") as f:
+        f.write(time.strftime("%H:%M:%S ") + line + "\n")
+
+
 class YtStrip:
     def __init__(self):
         self.lock = threading.Lock()
@@ -76,6 +81,7 @@ class YtStrip:
     def response(self, flow: http.HTTPFlow):
         if not PATTERN.match(flow.request.path) or flow.response.status_code != 200:
             return
+        started = time.time()
         msg = json.dumps({
             "url": f"https://{HOST}{flow.request.path}",
             "reqHeaders": dict(flow.request.headers),
@@ -88,8 +94,10 @@ class YtStrip:
             p.stdin.write(msg + "\n")
             p.stdin.flush()
             out = json.loads(p.stdout.readline() or '{"body": null}')
+        size = len(flow.response.content or b"")
         if out["body"]:
             flow.response.content = base64.b64decode(out["body"])
+        log(f"strip {flow.request.path[:60]} {size} -> {len(flow.response.content) if out['body'] else 'unchanged'} {time.time() - started:.2f}s")
 
 
 addons = [YtStrip()]
