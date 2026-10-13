@@ -1,0 +1,24 @@
+# seneca-light: merl's paper theme (after huyvohcmc/atlas.vim). Grey text on paper;
+# the ANSI colours are muted so git, ls and errors still read apart.
+background = #f4f2ec
+foreground = #333333
+cursor-color = #333333
+cursor-text = #f4f2ec
+selection-background = #d5d2c9
+selection-foreground = #000000
+palette = 0=#333333
+palette = 1=#a33a3a
+palette = 2=#4f7a3a
+palette = 3=#8a6d1f
+palette = 4=#3d5f8a
+palette = 5=#7a4f80
+palette = 6=#3a7a7a
+palette = 7=#e9e6de
+palette = 8=#8e8c86
+palette = 9=#b84a4a
+palette = 10=#5e8a48
+palette = 11=#9a7b2a
+palette = 12=#4c6f9a
+palette = 13=#8a5f90
+palette = 14=#4a8a8a
+palette = 15=#ffffff
