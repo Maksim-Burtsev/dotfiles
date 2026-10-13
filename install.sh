@@ -223,6 +223,11 @@ link_dotfiles() {
   if [[ -d "$HOME/open-source/batcave/.git" ]]; then
     run_or_print mkdir -p "$HOME/Library/Logs/work-sync" "$HOME/.local/share/work-sync/once"
     link_file "$DOTFILES_DIR/work-sync/dev.mburtsev.work-sync.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.work-sync.plist"
+    # YouTube app ad stripping for the phones over Tailscale; see ytstrip/README.md.
+    run_or_print mkdir -p "$HOME/Library/Logs/ytstrip" "$HOME/.local/share/ytstrip"
+    for p in ytstrip-node ytstrip; do
+      link_file "$DOTFILES_DIR/ytstrip/dev.mburtsev.$p.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.$p.plist"
+    done
   fi
 
   # Хуки не переносятся при clone, поэтому включает их установщик.
