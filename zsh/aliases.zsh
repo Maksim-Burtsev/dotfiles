@@ -9,6 +9,14 @@ alias rf='ruff format'
 # hangs here — sshd resolves it remotely and has no happy-eyeballs fallback,
 # unlike a browser. Pin such hosts to their IPv4 in /etc/hosts on the laptop.
 work() {
+  if [ "$1" = off ]; then
+    # TERM to the main process only: a normal quit, so the profile's "Continue where you left off"
+    # brings the tabs back on the next `work`. Helpers are "Brave Browser Helper", not matched.
+    pkill -TERM -f "MacOS/Brave Browser --.*user-data-dir=$HOME/.brave-work"
+    osascript -e 'quit app "agterm"'
+    pkill -f "ssh -fN -D 1080"
+    return 0
+  fi
   [ -n "$WORK_SSH" ] || { echo "work: set WORK_SSH=user@host in ~/.zshrc.local" >&2; return 1; }
   nc -z 127.0.0.1 1080 2>/dev/null \
     || ssh -fN -D 1080 -i ~/.ssh/id_ed25519_work -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes "$WORK_SSH" \
