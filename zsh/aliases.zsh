@@ -29,3 +29,5 @@ work() {
     --proxy-server="socks5://127.0.0.1:1080" \
     --user-data-dir="$HOME/.brave-work"
 }
+
+claude-credits() { ANTHROPIC_API_KEY=$(security find-generic-password -s anthropic-credits -w) claude "$@"; }
