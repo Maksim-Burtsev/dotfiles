@@ -78,6 +78,8 @@ brew "ruff"
 brew "rust"
 # Open source continuous file synchronization application
 brew "syncthing", restart_service: :changed
+# Easiest, most secure way to use WireGuard and 2FA
+brew "tailscale", link: false
 # User interface to the TELNET protocol
 brew "telnet"
 # Terminal multiplexer
@@ -118,6 +120,8 @@ cask "hammerspoon"
 cask "iterm2"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
+# Intercept, modify, replay, save HTTP/S traffic
+cask "mitmproxy"
 # Replacement for Docker Desktop
 cask "orbstack"
 # Mesh VPN based on WireGuard
