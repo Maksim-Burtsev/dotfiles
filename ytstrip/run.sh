@@ -9,5 +9,5 @@ $TS serve --bg --tcp 443 tcp://127.0.0.1:8443 >/dev/null
 # The CA for phones to install (serve may not read files without root, so a tiny local server).
 /usr/bin/python3 -m http.server 8081 --bind 127.0.0.1 --directory "$HOME/.local/share/ytstrip/pub" >/dev/null 2>&1 &
 $TS serve --bg --http 80 http://127.0.0.1:8081 >/dev/null
-exec /opt/homebrew/bin/mitmdump -q -s "$(dirname "$0")/addon.py" --set confdir="$HOME/.local/share/ytstrip/ca" --set upstream_cert=false \
+exec /opt/homebrew/bin/mitmdump -q -s "$(dirname "$0")/addon.py" --set confdir="$HOME/.local/share/ytstrip/ca" --set upstream_cert=false --set ssl_verify_upstream_trusted_ca=/etc/ssl/cert.pem \
   --mode reverse:https://youtubei.googleapis.com@127.0.0.1:8443 --mode dns@53
