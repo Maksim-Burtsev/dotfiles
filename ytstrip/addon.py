@@ -21,6 +21,66 @@ PATTERN = re.compile(
 )
 
 
+# The iOS app can fetch the player response through googlevideo "onesie" requests, which bypass
+# this proxy and keep the ads. Its keys come in a hot config inside these responses:
+# responseContext(1) > globalConfigGroup(16) > hotConfigGroup(7) > mediaHotConfig(138536474)
+# > onesieHotConfig(146311580). Without them the app falls back to /player, which we strip.
+ONESIE_PATH = [1, 16, 7, 138536474]
+ONESIE_FIELD = 146311580
+HOT_CONFIG = re.compile(r"^/youtubei/v1/(log_event|config)(\?.*)?$")
+
+
+def varint(b, i):
+    n = shift = 0
+    while True:
+        c = b[i]
+        i += 1
+        n |= (c & 0x7F) << shift
+        shift += 7
+        if c < 0x80:
+            return n, i
+
+
+def enc_varint(n):
+    out = bytearray()
+    while True:
+        c, n = n & 0x7F, n >> 7
+        out.append(c | (0x80 if n else 0))
+        if not n:
+            return bytes(out)
+
+
+def drop_field(msg, path, field):
+    """Return msg with `field` removed from the submessage at `path`, or None if absent."""
+    out, i, hit = bytearray(), 0, False
+    while i < len(msg):
+        start = i
+        key, i = varint(msg, i)
+        num, wt = key >> 3, key & 7
+        if wt == 0:
+            _, i = varint(msg, i)
+        elif wt == 1:
+            i += 8
+        elif wt == 5:
+            i += 4
+        elif wt == 2:
+            ln, j = varint(msg, i)
+            i = j + ln
+            if not path and num == field:
+                hit = True
+                continue
+            if path and num == path[0]:
+                sub = drop_field(msg[j:i], path[1:], field)
+                if sub is not None:
+                    out += enc_varint(key) + enc_varint(len(sub)) + sub
+                    hit = True
+                    continue
+        else:
+            return None  # groups: not used by these messages
+        out += msg[start:i]
+    return bytes(out) if hit else None
+
+
 def log(line):
     with open(os.path.expanduser("~/Library/Logs/ytstrip/strip.log"), "a") as f:
         f.write(time.strftime("%H:%M:%S ") + line + "\n")
@@ -69,6 +129,10 @@ class YtStrip:
 
     def request(self, flow: http.HTTPFlow):
         flow.request.host_header = HOST  # keep the real name when dialing the resolved IP
+        if HOT_CONFIG.match(flow.request.path):
+            # Without the hash of its cached hot config the server sends the config again, so the
+            # app replaces its cached onesie keys with our stripped copy.
+            flow.request.headers.pop("x-youtube-hot-hash-data", None)
 
     def dns_request(self, flow: dns.DNSFlow):
         q = flow.request.question
@@ -79,6 +143,15 @@ class YtStrip:
             flow.response = flow.request.fail(dns.response_codes.REFUSED)  # not an open resolver
 
     def response(self, flow: http.HTTPFlow):
+        if HOT_CONFIG.match(flow.request.path) and flow.response.status_code == 200 and flow.response.content:
+            try:
+                stripped = drop_field(flow.response.content, ONESIE_PATH, ONESIE_FIELD)
+            except IndexError:
+                stripped = None
+            if stripped is not None:
+                flow.response.content = stripped
+                log(f"onesie keys dropped from {flow.request.path[:40]}")
+            return
         if not PATTERN.match(flow.request.path) or flow.response.status_code != 200:
             return
         started = time.time()
