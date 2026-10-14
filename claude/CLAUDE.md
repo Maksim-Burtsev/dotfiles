@@ -48,6 +48,7 @@ I often read the end of a long report on the phone or only its first lines: say 
 - When you stop without finishing, comment on the issue: the branch, where it stands, and what unblocks it. A chat is not where state lives.
 - When I interrupt with a question, answer it and go back to the interrupted work.
 - In a stack of PRs, merge the base without `--delete-branch`: deleting its branch closes the PR stacked on it for good.
+- A worktree you created is yours to remove without asking once its work is safe: `git status` is clean and the branch is pushed (or merged). Then `git worktree remove` it (no `--force`) and say so in one line. Ask only if it holds something that exists nowhere else: uncommitted or unpushed changes, untracked files.
 
 # Kimi: a second opinion on design
 
