@@ -96,7 +96,7 @@ brew "wget"
 brew "yq"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
-# Terminal code navigator: read a project, review a branch, fix a line
+# Keyboard-only code navigator for the terminal
 brew "maksim-burtsev/tap/merl", trusted: true
 # Remote terminal application, with cursor shape (DECSCUSR) pass-through
 brew "maksim-burtsev/tap/mosh-cursor", trusted: true
