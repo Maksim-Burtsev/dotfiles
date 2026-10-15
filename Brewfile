@@ -76,6 +76,8 @@ brew "python@3.13"
 brew "ruff"
 # Safe, concurrent, practical language
 brew "rust"
+# Rust toolchain installer
+brew "rustup"
 # Open source continuous file synchronization application
 brew "syncthing", restart_service: :changed
 # Easiest, most secure way to use WireGuard and 2FA
