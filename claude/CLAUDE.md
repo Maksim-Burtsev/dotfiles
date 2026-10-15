@@ -78,9 +78,7 @@ Before labelling, write every decision from the chat into the issue: the next ag
 
 # Compass and calendar
 
-@~/open-source/batcave/config/compass.md
-
-The compass above is the *why*: my goals for the next months, this week's outcomes, what is "not now", and what agents may pick up on their own. Weigh plans, task picks and recommendations against it so I don't re-explain; when a request pulls against it, say so once and carry on. When I name a new goal, priority or "not now", update the file. It is private: its contents never go into a repo, PR, issue or a message to anyone else.
+The compass (`~/open-source/batcave/config/compass.md`) is the *why*: my goals for the next months, this week's outcomes, what is "not now", and what agents may pick up on their own. Weigh plans, task picks and recommendations against it so I don't re-explain; when a request pulls against it, say so once and carry on. When I name a new goal, priority or "not now", update the file. The second brain's SessionStart hook adds it at the start of a session, without its work blocks in a personal project's folder; read the file when a plan or a pick needs more. It is private: its contents never go into a repo, PR, issue or a message to anyone else.
 
 The calendar is the *when*. My personal Google calendar (primary) is mine and the agents' to fill; the work calendar (Tetrika) is read-only. An event's description is its brief: whoever opens it at that time, me or an agent, starts without asking. Weekly planning and turning a brain dump into calendar blocks: the `week` skill.
 
