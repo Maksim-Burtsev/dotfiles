@@ -23,7 +23,7 @@ Homes:
 4. Show the draft as one compact day-by-day overview and get the owner's ok. Then write it.
 5. Fill the day map from the approved draft (below).
 6. Update the compass: the week's outcomes, any new goal or "not now".
-7. English check, about three minutes: read the week's English dictations from Wispr (`~/Library/Application Support/Wispr Flow/flow.sqlite`, table History, `detectedLanguage = 'en'`, column `asrText`) and show the owner the three mistakes they repeated most, each with the natural version, and whether last week's top three came back. Also count English vs Russian dictations off work, so the switch shows as a number.
+7. English check, about three minutes: read the week's English dictations from Wispr (`~/Library/Application Support/Wispr Flow/flow.sqlite`, table History, `detectedLanguage = 'en'`, column `asrText`) and give the owner a short English retro: the three mistakes they repeated most, each with the natural version, a real example from their week, and one small habit to fix it in daily life (easy to remember, nothing to study); whether last week's top three came back; one thing that got better. Never skip it, even in a rushed planning. Also count English vs Russian dictations off work, so the switch shows as a number.
 
 ## The day map
 
