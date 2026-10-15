@@ -30,4 +30,4 @@ work() {
     --user-data-dir="$HOME/.brave-work"
 }
 
-claude-credits() { ANTHROPIC_API_KEY=$(security find-generic-password -s anthropic-credits -w) claude "$@"; }
+claude-credits() { ANTHROPIC_API_KEY=$(security find-generic-password -s anthropic-api-key -w) claude "$@"; }
