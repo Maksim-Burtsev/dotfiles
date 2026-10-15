@@ -137,6 +137,10 @@
   "remoteControlAtStartup": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
+  "statusLine": {
+    "command": "$HOME/open-source/dotfiles/claude/statusline.sh",
+    "type": "command"
+  },
   "subagentPromptCacheTtl": "1h",
   "theme": "auto",
   "tui": "fullscreen"
