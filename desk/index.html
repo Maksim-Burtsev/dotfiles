@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#1e2030" media="(prefers-color-scheme: dark)">
 <title>Пульт решений</title>
 <link rel="icon" href="data:,">
+<script>try { const t = localStorage.getItem('desk-theme'); if (t) document.documentElement.dataset.theme = t } catch {}</script>
 <script>if (!location.pathname.endsWith('/')) location.replace(location.pathname + '/' + location.search + location.hash)</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,8 +29,7 @@
   --spring: cubic-bezier(.34, 1.56, .64, 1);
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+:root[data-theme="dark"] {
     --bg: #222436; --rail: #1e2030; --panel: #262940; --sunk: #1e2030; --line: #2f334d; --line-strong: #3b4261;
     --ink: #d4dcf8; --ink-2: #b4c0ec; --muted: #8e97c4; --faint: #646d9c;
     --accent: #82aaff; --accent-ink: #1b1d2b; --accent-soft: rgb(130 170 255 / .09); --accent-ring: rgb(130 170 255 / .45);
@@ -39,7 +39,6 @@
     --shadow: 0 1px 2px rgb(0 0 0 / .2), 0 10px 30px -14px rgb(0 0 0 / .5);
     --shadow-lg: 0 2px 6px rgb(0 0 0 / .25), 0 28px 56px -22px rgb(0 0 0 / .7);
     color-scheme: dark;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -56,6 +55,8 @@ a { color: inherit; }
 .rail { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; background: var(--rail); border-right: 1px solid var(--line); z-index: 3; }
 .rail-head { padding: 22px 22px 16px; display: grid; gap: 14px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
+.brand .theme { margin-left: auto; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font-size: 18px; color: var(--muted); }
+.brand .theme:hover { color: var(--ink); background: var(--sunk); }
 .brand .mark { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; font: 600 13px var(--mono);
   background: linear-gradient(var(--cap-top), var(--cap-bot)); box-shadow: inset 0 0 0 1px var(--line-strong), 0 2px 0 var(--cap-side); color: var(--accent); }
 .count { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -181,7 +182,7 @@ h1 { margin: 0; font-size: clamp(28px, 2.6vw, 48px); line-height: 1.12; font-wei
 .btn i { font-size: 17px; }
 .btn kbd { height: 20px; min-width: 20px; font-size: 11px; margin-right: -4px; }
 .btn.go { background: var(--add); color: #fff; box-shadow: 0 1px 0 rgb(0 0 0 / .15), 0 6px 16px -8px var(--add); }
-@media (prefers-color-scheme: dark) { .btn.go { color: #1b1d2b; } }
+:root[data-theme="dark"] .btn.go { color: #1b1d2b; }
 .btn.go:hover { filter: brightness(1.06); background: var(--add); }
 .btn.go.on { background: var(--add-soft); color: var(--add); box-shadow: inset 0 0 0 1px var(--add); }
 .btn.go kbd { background: rgb(255 255 255 / .2); color: inherit; box-shadow: none; }
@@ -252,7 +253,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
 <div class="app" id="app">
   <aside class="rail" aria-label="Очередь решений">
     <div class="rail-head">
-      <div class="brand"><span class="mark">?</span>Пульт решений</div>
+      <div class="brand"><span class="mark">?</span>Пульт решений<button class="theme" id="theme" type="button" aria-label="Тема" title="Тема (T)"><i class="ph"></i></button></div>
       <div class="count" id="count">Загружаю…</div>
       <div class="ticks" id="ticks"></div>
     </div>
@@ -265,6 +266,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
         <span><kbd>L</kbd></span><span>отложить</span>
         <span><kbd>N</kbd></span><span>написать заметку</span>
         <span><kbd>J</kbd><kbd>K</kbd></span><span>следующее, предыдущее</span>
+        <span><kbd>T</kbd></span><span>светлая, тёмная тема</span>
       </div>
     </div>
   </aside>
@@ -579,7 +581,20 @@ function paint() {
   if (!noteFocused() && !S.timers[c.id] && r.note.value !== (a.note || '')) { r.note.value = a.note || ''; grow(r.note); }
 }
 
+const theme = t => {
+  const root = document.documentElement;
+  if (t) { root.dataset.theme = t; try { localStorage.setItem('desk-theme', t) } catch {} }
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'dark' : 'light';
+  $('#theme i').className = 'ph ' + (dark ? 'ph-sun' : 'ph-moon');
+  for (const m of document.querySelectorAll('meta[name=theme-color]')) { m.content = dark ? '#1e2030' : '#ffffff'; m.removeAttribute('media'); }
+  return dark;
+};
+const flipTheme = () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+theme();
+$('#theme').onclick = flipTheme;
 addEventListener('keydown', e => {
+  if (!e.metaKey && !e.ctrlKey && !e.altKey && e.code === 'KeyT' && !/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { e.preventDefault(); flipTheme(); return; }
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { if (e.key === 'Escape') document.activeElement.blur(); return; }
   const c = S.byId[S.cur];
