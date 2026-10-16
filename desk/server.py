@@ -1,6 +1,7 @@
 """Decision desk: serves index.html, the cards agents write and the answers the owner gives.
 
 Data lives in $DESK_DATA (default ~/.local/share/desk): cards/<id>.json, answers/<id>.json, media/*.
+Each variants/NAME.html is served at /NAME/ against the same data.
 Usage: server.py [port]
 """
 
@@ -78,10 +79,19 @@ class Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
-    def do_GET(self):
+    def route(self):
         path = self.path.split("?", 1)[0]
+        m = re.match(r"^/([a-z0-9-]+)(/.*)?$", path)
+        if m and (HERE / "variants" / f"{m[1]}.html").is_file():
+            return HERE / "variants" / f"{m[1]}.html", m[2] or ""
+        return HERE / "index.html", path
+
+    def do_GET(self):
+        page, path = self.route()
+        if path == "":
+            return self.send(301, headers=[("Location", self.path.split("?", 1)[0].rsplit("/", 1)[1] + "/")])
         if path in ("/", "/index.html"):
-            return self.send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8",
+            return self.send(200, page.read_bytes(), "text/html; charset=utf-8",
                              [("Cache-Control", "no-cache")])
         if path == "/api/state":
             raw, tag = state()
@@ -113,7 +123,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send(206, body, ctype, common + [("Content-Range", f"bytes {start}-{end}/{size}")])
 
     def do_POST(self):
-        m = re.match(r"^/api/answers/([^/]+)$", self.path)
+        m = re.match(r"^/api/answers/([^/]+)$", self.route()[1])
         if not m or not ID.match(m[1]):
             return self.send(404, b"{}")
         try:
