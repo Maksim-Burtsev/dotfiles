@@ -3,12 +3,11 @@ font-family = Monaco
 font-size = 15
 
 # Theme. Browse others: ghostty +list-themes (interactive preview).
-# seneca-light: merl's paper theme (agterm/themes). Dark one to return to: TokyoNight Moon, opacity 0.947.
-theme = /Users/mburtsev/.config/agterm/themes/seneca-light
+# Light alternative: merl's seneca-light (/Users/mburtsev/.config/agterm/themes/seneca-light), opacity 1.
+theme = TokyoNight Moon
 
 # Окно и вид — как в iTerm
-# Light theme: opaque background reads better (as in agterm/ghostty.conf).
-background-opacity = 1
+background-opacity = 0.947
 window-width = 91
 window-height = 30
 cursor-style = bar
