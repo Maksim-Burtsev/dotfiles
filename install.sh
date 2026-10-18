@@ -179,6 +179,7 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
   link_file "$DOTFILES_DIR/claude/skills/design-taste-frontend" "$HOME/.claude/skills/design-taste-frontend"
   link_file "$DOTFILES_DIR/claude/skills/week" "$HOME/.claude/skills/week"
+  link_file "$DOTFILES_DIR/claude/themes" "$HOME/.claude/themes"
   # Remote Control server for the phone; launchd picks it up at the next login.
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control.plist"
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control-work.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control-work.plist"

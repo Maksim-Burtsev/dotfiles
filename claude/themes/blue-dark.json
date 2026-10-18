@@ -1,0 +1,9 @@
+{
+  "name": "Blue (dark)",
+  "base": "dark",
+  "overrides": {
+    "claude": "#82aaff",
+    "claudeShimmer": "#b4c8ff",
+    "briefLabelClaude": "#82aaff"
+  }
+}
