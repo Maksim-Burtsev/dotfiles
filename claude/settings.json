@@ -148,6 +148,6 @@
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "subagentPromptCacheTtl": "1h",
-  "theme": "custom:blue-light",
+  "theme": "auto",
   "tui": "fullscreen"
 }
