@@ -5,6 +5,7 @@ Personal macOS dotfiles and bootstrap scripts.
 ## Structure
 
 - `Brewfile` - Homebrew packages, casks, npm/go/uv tools, and VSCode extensions.
+- `build-cleanup/` - a weekly launchd job (Sunday 13:00) that deletes cargo build output agents left in Claude session scratchpads (`/private/tmp/claude-$UID`), merl batch runs (`~/.cache/merl-batch`), merl worktrees (`~/open-source/merl-*`, never the main checkout) and `/tmp/*-target`, once untouched for 3 days and not open in any process, then runs `uv cache prune`. `build-cleanup.sh -n` lists what would go; the log is `~/Library/Logs/build-cleanup/build-cleanup.log`.
 - `claude/` - Claude Code settings, custom skills, the global `CLAUDE.md`, and hooks. `hooks/dotfiles-guard.sh` reminds agents to put machine settings into the repo: right after a command that changes the system (`defaults write`, `brew install`, `pmset`, ...), and on session exit if the repo has uncommitted or unpushed work.
 - `git/` - tracked Git config; local-only values are included from `~/.gitconfig.local` if that file exists. `delta` is the pager, so every diff, `git show`, `git log -p`, `git blame` and `git add -p` come out syntax-highlighted, with file names and line numbers as `vscode://` links. Branch review happens in `merl --review` (the `mr` fzf script it replaced is gone).
   The selected model and effort level (`model`, `effortLevel`, `modelSettings`) never reach the repo: a clean filter from `.gitattributes` strips them on `git add`, so switching models in the UI does not make the repo dirty. `install.sh` enables the filter.

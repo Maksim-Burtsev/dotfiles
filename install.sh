@@ -215,6 +215,10 @@ link_dotfiles() {
   link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
   link_file "$DOTFILES_DIR/vdirsyncer/dev.mburtsev.vdirsyncer.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.vdirsyncer.plist"
 
+  # Weekly removal of the cargo target/ dirs agents leave behind (see build-cleanup/build-cleanup.sh).
+  run_or_print mkdir -p "$HOME/Library/Logs/build-cleanup"
+  link_file "$DOTFILES_DIR/build-cleanup/dev.mburtsev.build-cleanup.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.build-cleanup.plist"
+
   # Second brain jobs run only on the machine that holds the brain's git history (the Mac mini);
   # the laptop gets the folder through Syncthing without .git.
   if [[ -d "$HOME/open-source/second-brain/.git" ]]; then
