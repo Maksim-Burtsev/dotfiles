@@ -3,6 +3,7 @@
   "base": "dark",
   "overrides": {
     "claude": "#82aaff",
+    "clawd_body": "#82aaff",
     "claudeShimmer": "#b4c8ff",
     "briefLabelClaude": "#82aaff"
   }
