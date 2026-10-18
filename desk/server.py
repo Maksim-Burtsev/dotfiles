@@ -34,6 +34,8 @@ def read_dir(name):
 def card_problem(c):
     if "_error" in c:
         return c["_error"]
+    if not c.get("problem"):
+        return "no problem line"
     if not isinstance(c.get("options"), list):
         return "options is not a list"
     for part in [c.get("now")] + c["options"]:

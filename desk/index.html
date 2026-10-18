@@ -113,6 +113,8 @@ kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; 
 .verdict { margin-left: auto; }
 h1 { margin: 0; font-size: clamp(28px, 2.6vw, 48px); line-height: 1.12; font-weight: 650; letter-spacing: -.024em; text-wrap: balance; max-width: 30ch; }
 .today { margin: 0; font-size: 20px; line-height: 1.6; color: var(--ink-2); max-width: 72ch; }
+.problem { margin: 0; font-size: 22px; line-height: 1.5; font-weight: 600; max-width: 64ch; }
+.meta .tiny { color: var(--later); background: var(--later-soft); padding: 3px 8px; border-radius: 7px; font-weight: 600; }
 
 .rows { display: grid; gap: 22px; }
 .row { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 24px; animation: rise .55s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + 80ms); }
@@ -456,7 +458,9 @@ function renderCard(dir) {
       h('div', { class: 'meta' },
         c.link ? h('a', { class: 'tag', href: c.link, target: '_blank', rel: 'noopener', text: c.tag || 'issue' }) : (c.tag ? h('span', { class: 'tag', text: c.tag }) : null),
         c.visible ? h('span', { text: 'Видно: ' + c.visible }) : null,
+        typeof c.diff === 'number' && c.diff < 1 ? h('span', { class: 'tiny', text: 'на экране почти без разницы' }) : null,
         refs.verdict),
+      c.problem ? h('p', { class: 'problem', text: c.problem }) : null,
       h('h1', { text: c.title }),
       c.today ? h('p', { class: 'today', text: c.today }) : null),
     rows,

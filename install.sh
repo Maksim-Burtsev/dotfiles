@@ -208,6 +208,9 @@ link_dotfiles() {
   # Decision desk for agents' questions, also on the tailnet at /desk (see desk/README.md).
   link_file "$DOTFILES_DIR/desk/dev.mburtsev.desk.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.desk.plist"
 
+  # The machine's load once a minute into ~/.local/state/load.log, read by merl's night runs.
+  link_file "$DOTFILES_DIR/load-log/dev.mburtsev.load-log.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.load-log.plist"
+
   # Yandex 360 <-> Google Calendar two-way sync (see vdirsyncer/README.md).
   link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
   link_file "$DOTFILES_DIR/vdirsyncer/dev.mburtsev.vdirsyncer.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.vdirsyncer.plist"
