@@ -181,6 +181,7 @@ link_dotfiles() {
   # Remote Control server for the phone; launchd picks it up at the next login.
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control.plist"
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control-work.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control-work.plist"
+  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control-anton-twin.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control-anton-twin.plist"
 
   # pitwall lives in its own repo; link it only if that checkout is present.
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
