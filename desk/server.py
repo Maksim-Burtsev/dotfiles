@@ -36,14 +36,8 @@ def card_problem(c):
         return c["_error"]
     if not c.get("problem"):
         return "no problem line"
-    if not c.get("stakes"):
-        return "no stakes: who runs into it and how much it matters"
     if not isinstance(c.get("options"), list):
         return "options is not a list"
-    for o in c["options"]:
-        missing = [k for k in ("ux", "pros", "cons") if not (isinstance(o, dict) and o.get(k))]
-        if missing:
-            return f"option {o.get('key', '?') if isinstance(o, dict) else '?'} has no {', '.join(missing)}"
     for part in [c.get("now")] + c["options"]:
         if isinstance(part, dict) and "keys" in part and not isinstance(part["keys"], list):
             return "keys is not a list"

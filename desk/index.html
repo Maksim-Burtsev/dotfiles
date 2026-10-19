@@ -173,10 +173,6 @@ h1 { margin: 0; font-size: clamp(28px, 2.6vw, 48px); line-height: 1.12; font-wei
 .facts h3 { margin: 0 0 8px; font-size: 14.5px; font-weight: 600; color: var(--muted); }
 .facts p { margin: 0; font-size: 17px; color: var(--ink-2); }
 .card code { font: .88em var(--mono); padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: inherit; }
-.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px 40px; padding-top: 6px; }
-.brief h3 { margin: 0 0 6px; font-size: 14.5px; font-weight: 600; color: var(--muted); }
-.brief p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--ink-2); max-width: 70ch; }
-.note.pros { color: var(--add); }
 
 .dock { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 14px 0 24px 96px; background: linear-gradient(transparent, var(--bg) 22px); }
 .dock-in { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--glass); border: 1px solid var(--line);
@@ -441,9 +437,8 @@ function renderCard(dir) {
           h('span', { class: 'badge mine' }, icon('check-bold'), 'твой выбор')),
         o.rule ? rich('rule', o.rule) : null,
         keys(o.keys),
-        o.ux || o.adds ? rich('note', o.ux || o.adds, 'Что увидишь: ') : null,
-        o.pros ? rich('note pros', o.pros, 'Плюс: ') : null,
-        o.cons ? rich('note cons', o.cons, o.pros ? 'Минус: ' : '') : null));
+        o.adds ? rich('note', o.adds, 'На экране: ') : null,
+        o.cons ? rich('note cons', o.cons) : null));
     refs.rows[o.key] = { row, cap };
     rows.append(row);
   }
@@ -469,10 +464,7 @@ function renderCard(dir) {
         refs.verdict),
       c.problem ? rich('problem', c.problem) : null,
       h('h1', {}, ...String(c.title).split('`').map((part, n) => n % 2 ? h('code', { text: part }) : part)),
-      c.today ? rich('today', c.today) : null,
-      c.context || c.stakes ? h('div', { class: 'brief' },
-        c.context ? h('div', {}, h('h3', { text: 'Что это' }), rich('', c.context)) : null,
-        c.stakes ? h('div', {}, h('h3', { text: 'Кого касается и насколько' }), rich('', c.stakes)) : null) : null),
+      c.today ? rich('today', c.today) : null),
     rows,
     facts.length ? h('section', { class: 'facts', style: `--i:${i + 1}` }, facts.map(([k, v]) => h('div', {}, h('h3', { text: k }), rich('', v)))) : null,
     h('div', { class: 'dock', style: 'animation-delay:120ms' }, h('div', { class: 'dock-in' },
