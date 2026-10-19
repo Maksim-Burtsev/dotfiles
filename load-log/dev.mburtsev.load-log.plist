@@ -4,7 +4,7 @@
 <dict>
   <key>Label</key><string>dev.mburtsev.load-log</string>
   <key>ProgramArguments</key>
-  <array><string>/bin/sh</string><string>-c</string><string>mkdir -p "$HOME/.local/state" &amp;&amp; echo "$(date +%FT%T) $(sysctl -n vm.loadavg)" &gt;&gt; "$HOME/.local/state/load.log"</string></array>
+  <array><string>/bin/sh</string><string>-c</string><string>f="$HOME/.local/state/load.log"; mkdir -p "$HOME/.local/state" &amp;&amp; l=$(sysctl -n vm.loadavg) &amp;&amp; echo "$(date +%FT%T) $l" &gt;&gt; "$f" &amp;&amp; set -- $l &amp;&amp; [ "${2%.*}" -ge 10 ] &amp;&amp; ps -Ao pcpu,command -r | sed -n "2,6s/^/  /p" | cut -c1-160 &gt;&gt; "$f"; true</string></array>
   <key>StartInterval</key><integer>60</integer>
   <key>RunAtLoad</key><true/>
 </dict>
