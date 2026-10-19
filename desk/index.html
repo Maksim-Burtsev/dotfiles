@@ -172,6 +172,11 @@ h1 { margin: 0; font-size: clamp(28px, 2.6vw, 48px); line-height: 1.12; font-wei
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 40px; margin-left: 96px; padding-top: 8px; }
 .facts h3 { margin: 0 0 8px; font-size: 14.5px; font-weight: 600; color: var(--muted); }
 .facts p { margin: 0; font-size: 17px; color: var(--ink-2); }
+.card code { font: .88em var(--mono); padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: inherit; }
+.brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px 40px; padding-top: 6px; }
+.brief h3 { margin: 0 0 6px; font-size: 14.5px; font-weight: 600; color: var(--muted); }
+.brief p { margin: 0; font-size: 18px; line-height: 1.55; color: var(--ink-2); max-width: 70ch; }
+.note.pros { color: var(--add); }
 
 .dock { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 14px 0 24px 96px; background: linear-gradient(transparent, var(--bg) 22px); }
 .dock-in { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--glass); border: 1px solid var(--line);
@@ -302,6 +307,7 @@ function h(tag, attrs = {}, ...kids) {
 }
 const icon = (name, fill) => h('i', { class: (fill ? 'ph-fill ph-' : 'ph ph-') + name, 'aria-hidden': 'true' });
 const arr = v => Array.isArray(v) ? v : [];
+const rich = (cls, s, lead) => h('p', cls ? { class: cls } : {}, lead ? h('b', { text: lead }) : null, ...String(s).split('`').map((part, n) => n % 2 ? h('code', { text: part }) : part));
 const fmt = s => { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const answered = a => !!a && (a.status === 'later' || arr(a.pick).length > 0 || !!(a.note || '').trim());
 const time = iso => new Date(iso).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
@@ -361,7 +367,7 @@ function renderRail() {
   S.railSig = sig;
   const q = $('#queue');
   q.replaceChildren($('#indicator'), ...S.cards.map(c => h('button', { class: 'qitem', type: 'button', 'data-id': c.id, onclick: () => go(c.id) },
-    h('span', { class: 'tag', text: c.tag || '' }), h('span', { class: 't', text: c.title || c.id }), h('span', { class: 'st' }))));
+    h('span', { class: 'tag', text: c.tag || '' }), h('span', { class: 't', text: (c.title || c.id).replaceAll('`', '') }), h('span', { class: 'st' }))));
   $('#ticks').replaceChildren(...S.cards.map(c => h('button', { type: 'button', 'data-id': c.id, 'aria-label': c.title, onclick: () => go(c.id) })));
 }
 
@@ -420,23 +426,24 @@ function renderCard(dir) {
   const rows = h('div', { class: 'rows' });
   if (c.now) rows.append(h('section', { class: 'row now', style: `--i:${i++}` },
     h('div', { class: 'gut' }, h('span', { class: 'lbl', text: 'сейчас' })),
-    body(c.now, keys(c.now.keys), c.now.caption ? h('p', { class: 'rule', text: c.now.caption }) : null)));
+    body(c.now, keys(c.now.keys), c.now.caption ? rich('rule', c.now.caption) : null)));
   if (c.result) rows.append(h('section', { class: 'row result', style: `--i:${i++}` },
     h('div', { class: 'gut' }, h('span', { class: 'lbl', text: 'после' })),
     body(c.result, c.result.title ? h('div', { class: 'otitle' }, h('b', { text: c.result.title })) : null,
-      c.result.caption ? h('p', { class: 'rule', text: c.result.caption }) : null)));
+      c.result.caption ? rich('rule', c.result.caption) : null)));
   for (const o of c.options) {
     const cap = h('button', { class: 'cap', type: 'button', 'aria-label': 'Выбрать ' + o.key, text: o.key, onclick: () => pick(c, o.key) });
     const row = h('section', { class: 'row' + (o.rec ? ' rec' : ''), style: `--i:${i++}` },
       h('div', { class: 'gut' }, cap),
       body(o,
-        h('div', { class: 'otitle' }, h('b', { text: o.name }),
+        h('div', { class: 'otitle' }, h('b', {}, ...String(o.name).split('`').map((part, n) => n % 2 ? h('code', { text: part }) : part)),
           o.rec ? h('span', { class: 'badge rec' }, icon('star', true), 'рекомендую') : null,
           h('span', { class: 'badge mine' }, icon('check-bold'), 'твой выбор')),
-        o.rule ? h('p', { class: 'rule', text: o.rule }) : null,
+        o.rule ? rich('rule', o.rule) : null,
         keys(o.keys),
-        o.adds ? h('p', { class: 'note' }, h('b', { text: 'На экране: ' }), o.adds) : null,
-        o.cons ? h('p', { class: 'note cons', text: o.cons }) : null));
+        o.ux || o.adds ? rich('note', o.ux || o.adds, 'Что увидишь: ') : null,
+        o.pros ? rich('note pros', o.pros, 'Плюс: ') : null,
+        o.cons ? rich('note cons', o.cons, o.pros ? 'Минус: ' : '') : null));
     refs.rows[o.key] = { row, cap };
     rows.append(row);
   }
@@ -457,14 +464,17 @@ function renderCard(dir) {
     h('header', { class: 'head', style: '--i:0' },
       h('div', { class: 'meta' },
         c.link ? h('a', { class: 'tag', href: c.link, target: '_blank', rel: 'noopener', text: c.tag || 'issue' }) : (c.tag ? h('span', { class: 'tag', text: c.tag }) : null),
-        c.visible ? h('span', { text: 'Видно: ' + c.visible }) : null,
+        c.visible ? h('span', { text: 'Видно: ' + c.visible.replaceAll('`', '') }) : null,
         typeof c.diff === 'number' && c.diff < 1 ? h('span', { class: 'tiny', text: 'на экране почти без разницы' }) : null,
         refs.verdict),
-      c.problem ? h('p', { class: 'problem', text: c.problem }) : null,
-      h('h1', { text: c.title }),
-      c.today ? h('p', { class: 'today', text: c.today }) : null),
+      c.problem ? rich('problem', c.problem) : null,
+      h('h1', {}, ...String(c.title).split('`').map((part, n) => n % 2 ? h('code', { text: part }) : part)),
+      c.today ? rich('today', c.today) : null,
+      c.context || c.stakes ? h('div', { class: 'brief' },
+        c.context ? h('div', {}, h('h3', { text: 'Что это' }), rich('', c.context)) : null,
+        c.stakes ? h('div', {}, h('h3', { text: 'Кого касается и насколько' }), rich('', c.stakes)) : null) : null),
     rows,
-    facts.length ? h('section', { class: 'facts', style: `--i:${i + 1}` }, facts.map(([k, v]) => h('div', {}, h('h3', { text: k }), h('p', { text: v })))) : null,
+    facts.length ? h('section', { class: 'facts', style: `--i:${i + 1}` }, facts.map(([k, v]) => h('div', {}, h('h3', { text: k }), rich('', v)))) : null,
     h('div', { class: 'dock', style: 'animation-delay:120ms' }, h('div', { class: 'dock-in' },
       h('div', { class: 'dock-row' }, refs.rec, refs.later, refs.saved, refs.next),
       h('div', { class: 'notewrap' }, h('label', { for: 'note', text: 'Заметка' }), refs.note))));
