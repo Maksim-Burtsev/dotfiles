@@ -88,16 +88,6 @@
       {
         "hooks": [
           {
-            "command": "$HOME/open-source/dotfiles/claude/hooks/dotfiles-guard.sh stop",
-            "statusMessage": "Проверяю дотфайлы...",
-            "timeout": 30,
-            "type": "command"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
             "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' completed --auto-reset",
             "type": "command"
           }

@@ -175,13 +175,9 @@ link_dotfiles() {
   fi
 
   link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
-  link_file "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_file "$DOTFILES_DIR/claude/skills/visual-teacher" "$HOME/.claude/skills/visual-teacher"
-  link_file "$DOTFILES_DIR/claude/skills/week" "$HOME/.claude/skills/week"
   # Remote Control server for the phone; launchd picks it up at the next login.
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control.plist"
-  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control-work.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control-work.plist"
-  link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control-anton-twin.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control-anton-twin.plist"
 
   # pitwall lives in its own repo; link it only if that checkout is present.
   if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
@@ -212,33 +208,21 @@ link_dotfiles() {
   # The machine's load once a minute into ~/.local/state/load.log, read by merl's night runs.
   link_file "$DOTFILES_DIR/load-log/dev.mburtsev.load-log.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.load-log.plist"
 
-  # Yandex 360 <-> Google Calendar two-way sync (see vdirsyncer/README.md).
-  link_file "$DOTFILES_DIR/vdirsyncer/config" "$HOME/.config/vdirsyncer/config"
-  link_file "$DOTFILES_DIR/vdirsyncer/dev.mburtsev.vdirsyncer.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.vdirsyncer.plist"
-
   # Weekly removal of the cargo target/ dirs agents leave behind (see build-cleanup/build-cleanup.sh).
   run_or_print mkdir -p "$HOME/Library/Logs/build-cleanup"
   link_file "$DOTFILES_DIR/build-cleanup/dev.mburtsev.build-cleanup.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.build-cleanup.plist"
 
-  # Second brain jobs run only on the machine that holds the brain's git history (the Mac mini);
-  # the laptop gets the folder through Syncthing without .git.
-  if [[ -d "$HOME/open-source/second-brain/.git" ]]; then
-    run_or_print mkdir -p "$HOME/Library/Logs/second-brain"
-    for job in pull nightly brief; do
-      link_file "$DOTFILES_DIR/second-brain/dev.mburtsev.second-brain-$job.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.second-brain-$job.plist"
-    done
-  fi
-
-  # Work part of the private compass and queued one-shot jobs go to the work laptop from the
-  # machine that holds Batcave (the Mac mini); see work-sync/work-sync.sh.
   if [[ -d "$HOME/open-source/batcave/.git" ]]; then
-    run_or_print mkdir -p "$HOME/Library/Logs/work-sync" "$HOME/.local/share/work-sync/once"
-    link_file "$DOTFILES_DIR/work-sync/dev.mburtsev.work-sync.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.work-sync.plist"
     # YouTube app ad stripping for the phones over Tailscale; see ytstrip/README.md.
     run_or_print mkdir -p "$HOME/Library/Logs/ytstrip" "$HOME/.local/share/ytstrip"
     for p in ytstrip-node ytstrip; do
       link_file "$DOTFILES_DIR/ytstrip/dev.mburtsev.$p.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.$p.plist"
     done
+  fi
+
+  # Personal links (own projects, work, accounts) live in the untracked private/ folder.
+  if [[ -f "$DOTFILES_DIR/private/install.sh" ]]; then
+    source "$DOTFILES_DIR/private/install.sh"
   fi
 
   # Хуки не переносятся при clone, поэтому включает их установщик.
