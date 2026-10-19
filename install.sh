@@ -208,10 +208,6 @@ link_dotfiles() {
   # The machine's load once a minute into ~/.local/state/load.log, read by merl's night runs.
   link_file "$DOTFILES_DIR/load-log/dev.mburtsev.load-log.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.load-log.plist"
 
-  # Weekly removal of the cargo target/ dirs agents leave behind (see build-cleanup/build-cleanup.sh).
-  run_or_print mkdir -p "$HOME/Library/Logs/build-cleanup"
-  link_file "$DOTFILES_DIR/build-cleanup/dev.mburtsev.build-cleanup.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.build-cleanup.plist"
-
   if [[ -d "$HOME/open-source/batcave/.git" ]]; then
     # YouTube app ad stripping for the phones over Tailscale; see ytstrip/README.md.
     run_or_print mkdir -p "$HOME/Library/Logs/ytstrip" "$HOME/.local/share/ytstrip"
