@@ -62,6 +62,13 @@ a { color: inherit; }
 .count { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .count b { color: var(--ink); font-weight: 600; }
 .count.done { color: var(--add); }
+.projects { display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: var(--sunk); box-shadow: inset 0 0 0 1px var(--line); }
+.projects[hidden], .pkey[hidden] { display: none; }
+.projects button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; height: 32px; border-radius: 8px; font-size: 14.5px; font-weight: 500; color: var(--muted); transition: background .2s, color .2s, box-shadow .2s; }
+.projects button:hover { color: var(--ink); }
+.projects button.on { background: var(--panel); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--shadow); }
+.projects button span { font: 600 12px var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; }
+.projects button.on span { color: var(--accent); }
 .ticks { display: flex; gap: 4px; }
 .ticks button { flex: 1; height: 6px; border-radius: 3px; background: var(--line-strong); transition: background .35s var(--ease), transform .2s var(--ease); }
 .ticks button.done { background: var(--add); }
@@ -235,6 +242,8 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
   .topbar .nav:disabled { opacity: .3; }
   .topbar .mid { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 12px; font-size: 14px; font-weight: 600; box-shadow: inset 0 0 0 1px var(--line-strong); }
   .topbar .mid span { color: var(--muted); font-weight: 500; }
+  .topbar .mid #mproj { color: var(--accent); font-weight: 600; }
+  #mproj:empty { display: none; }
   #card { padding: 24px 16px 0; }
   .head, .facts, .empty { padding-left: 0; margin-left: 0; }
   .dock { padding-left: 0; position: static; padding-bottom: calc(24px + env(safe-area-inset-bottom)); background: none; }
@@ -257,6 +266,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
   <aside class="rail" aria-label="Очередь решений">
     <div class="rail-head">
       <div class="brand"><span class="mark">?</span>Пульт решений<button class="theme" id="theme" type="button" aria-label="Тема" title="Тема (T)"><i class="ph"></i></button></div>
+      <div class="projects" id="projects" role="group" aria-label="Проект" hidden></div>
       <div class="count" id="count">Загружаю…</div>
       <div class="ticks" id="ticks"></div>
     </div>
@@ -269,6 +279,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
         <span><kbd>L</kbd></span><span>отложить</span>
         <span><kbd>N</kbd></span><span>написать заметку</span>
         <span><kbd>J</kbd><kbd>K</kbd></span><span>следующее, предыдущее</span>
+        <span class="pkey" hidden><kbd>P</kbd></span><span class="pkey" hidden>другой проект</span>
         <span><kbd>T</kbd></span><span>светлая, тёмная тема</span>
       </div>
     </div>
@@ -277,7 +288,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
   <div class="stage">
     <div class="topbar">
       <button class="nav" id="prev" type="button" aria-label="Предыдущее"><i class="ph ph-caret-left"></i></button>
-      <button class="mid" id="mid" type="button"><i class="ph ph-list"></i><b id="pos"></b><span id="mcount"></span></button>
+      <button class="mid" id="mid" type="button"><i class="ph ph-list"></i><span id="mproj"></span><b id="pos"></b><span id="mcount"></span></button>
       <button class="nav" id="next" type="button" aria-label="Следующее"><i class="ph ph-caret-right"></i></button>
     </div>
     <main id="card">
@@ -308,8 +319,10 @@ const fmt = s => { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + Str
 const answered = a => !!a && (a.status === 'later' || arr(a.pick).length > 0 || !!(a.note || '').trim());
 const time = iso => new Date(iso).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
 
-const S = { cards: [], byId: {}, answers: {}, broken: [], cur: null, etag: null, railSig: '', shownSig: null,
-  refs: null, timers: {}, pending: {}, seq: {}, saveState: {}, loaded: false };
+const S = { all: [], cards: [], byId: {}, answers: {}, broken: [], cur: null, etag: null, railSig: '', shownSig: null,
+  refs: null, timers: {}, pending: {}, seq: {}, saveState: {}, loaded: false, projects: ['merl'], project: 'merl' };
+const proj = c => c.project || 'merl';
+try { S.project = localStorage.getItem('desk-project') || 'merl' } catch {}
 
 function setOnline(ok) { $('#toast').classList.toggle('on', !ok); }
 
@@ -326,19 +339,42 @@ async function poll() {
 }
 
 function apply(d) {
-  S.cards = arr(d.cards);
-  S.byId = Object.fromEntries(S.cards.map(c => [c.id, c]));
+  S.all = arr(d.cards);
+  S.byId = Object.fromEntries(S.all.map(c => [c.id, c]));
   S.broken = arr(d.broken);
   for (const [id, a] of Object.entries(d.answers || {})) if (!S.pending[id]) S.answers[id] = a;
-  if (!S.loaded || !S.byId[S.cur]) {
+  S.projects = [...new Set(['merl', ...S.all.map(proj)])];
+  if (!S.projects.includes(S.project)) S.project = 'merl';
+  if (!S.loaded) {
     const fromHash = decodeURIComponent(location.hash.slice(1));
-    S.cur = S.byId[fromHash] ? fromHash : (S.cards.find(c => !answered(S.answers[c.id])) || S.cards[0] || {}).id || null;
+    if (S.byId[fromHash]) { S.cur = fromHash; S.project = proj(S.byId[fromHash]); }
     S.loaded = true;
   }
+  useProject(S.project, true);
   renderRail();
   const c = S.byId[S.cur];
   if ((c ? JSON.stringify(c) : '') !== S.shownSig && !noteFocused()) renderCard(1);
   paint();
+}
+
+function useProject(p, keepCur) {
+  S.project = p;
+  S.cards = S.all.filter(c => proj(c) === p);
+  if (!keepCur || !S.cards.some(c => c.id === S.cur))
+    S.cur = (S.cards.find(c => !answered(S.answers[c.id])) || S.cards[0] || {}).id || null;
+}
+
+function switchProject(p) {
+  if (!p || p === S.project) return;
+  if (S.timers[S.cur]) send(S.cur);
+  try { localStorage.setItem('desk-project', p) } catch {}
+  useProject(p, false);
+  history.replaceState(null, '', S.cur ? '#' + encodeURIComponent(S.cur) : location.pathname);
+  $('#app').classList.remove('drawer');
+  renderRail();
+  renderCard(1);
+  paint();
+  scrollTo({ top: 0 });
 }
 
 const noteFocused = () => !!S.refs && document.activeElement === S.refs.note;
@@ -358,9 +394,14 @@ function go(id, dir) {
 }
 
 function renderRail() {
-  const sig = S.cards.map(c => [c.id, c.tag, c.title].join('\u0001')).join('\u0002');
+  const sig = S.projects.join() + '\u0003' + S.project + '\u0003' + S.cards.map(c => [c.id, c.tag, c.title].join('\u0001')).join('\u0002');
   if (sig === S.railSig) return;
   S.railSig = sig;
+  const many = S.projects.length > 1;
+  $('#projects').hidden = !many;
+  for (const el of document.querySelectorAll('.pkey')) el.hidden = !many;
+  $('#projects').replaceChildren(...(many ? S.projects : []).map(p => h('button', { type: 'button', 'data-p': p, class: p === S.project ? 'on' : null,
+    'aria-pressed': String(p === S.project), onclick: () => switchProject(p) }, p, h('span'))));
   const q = $('#queue');
   q.replaceChildren($('#indicator'), ...S.cards.map(c => h('button', { class: 'qitem', type: 'button', 'data-id': c.id, onclick: () => go(c.id) },
     h('span', { class: 'tag', text: c.tag || '' }), h('span', { class: 't', text: (c.title || c.id).replaceAll('`', '') }), h('span', { class: 'st' }))));
@@ -542,6 +583,11 @@ function paint() {
   const count = $('#count');
   count.className = 'count' + (total && !waiting ? ' done' : '');
   count.replaceChildren(...(!total ? ['Пусто'] : waiting ? ['Ждут ответа ', h('b', { text: String(waiting) }), ' из ' + total] : ['Всё отвечено. Скажи Claude «готово».']));
+  for (const b of document.querySelectorAll('#projects button')) {
+    const n = S.all.filter(c => proj(c) === b.dataset.p && !answered(S.answers[c.id])).length;
+    $('span', b).textContent = n || '';
+  }
+  $('#mproj').textContent = S.projects.length > 1 ? S.project : '';
   $('#pos').textContent = total ? `${pos} из ${total}` : '0';
   $('#mcount').textContent = total ? (waiting ? `ждут ${waiting}` : 'всё') : '';
   $('#prev').disabled = !neighbour(-1);
@@ -603,6 +649,7 @@ addEventListener('keydown', e => {
   if (!e.metaKey && !e.ctrlKey && !e.altKey && e.code === 'KeyT' && !/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { e.preventDefault(); flipTheme(); return; }
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { if (e.key === 'Escape') document.activeElement.blur(); return; }
+  if (e.code === 'KeyP' && S.projects.length > 1) { e.preventDefault(); switchProject(S.projects[(S.projects.indexOf(S.project) + 1) % S.projects.length]); return; }
   const c = S.byId[S.cur];
   if (!c) return;
   const letter = /^Key([A-Z])$/.exec(e.code)?.[1];
