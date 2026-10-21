@@ -124,6 +124,8 @@ cask "iterm2"
 cask "libreoffice"
 # Intercept, modify, replay, save HTTP/S traffic
 cask "mitmproxy"
+# Open-source software for live streaming and screen recording
+cask "obs"
 # Replacement for Docker Desktop
 cask "orbstack"
 # Mesh VPN based on WireGuard
