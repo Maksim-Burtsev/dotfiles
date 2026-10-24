@@ -1,6 +1,8 @@
 """Decision desk: serves index.html, the cards agents write and the answers the owner gives.
 
 Data lives in $DESK_DATA (default ~/.local/share/desk): cards/<id>.json, answers/<id>.json, media/*.
+POST api/send asks the answer processor to run now: it touches $DESK_PROCESS/request and kicks the
+LaunchAgent $DESK_PROCESS_JOB. The processor writes started/finished there; api/state reports them.
 Each variants/NAME.html is served at /NAME/ against the same data.
 Usage: server.py [port]
 """
@@ -10,7 +12,9 @@ import json
 import mimetypes
 import os
 import re
+import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -19,6 +23,8 @@ HERE = Path(__file__).resolve().parent
 DATA = Path(os.environ.get("DESK_DATA", Path.home() / ".local/share/desk"))
 ID = re.compile(r"^[A-Za-z0-9_.-]{1,80}$")
 MEDIA = re.compile(r"^[A-Za-z0-9_.-]{1,200}$")
+PROCESS = Path(os.environ.get("DESK_PROCESS", Path.home() / ".local/state/desk-process"))
+PROCESS_JOB = os.environ.get("DESK_PROCESS_JOB", "dev.mburtsev.desk-process")
 
 
 def read_dir(name):
@@ -55,9 +61,27 @@ def state():
         else:
             cards.append({**c, "id": cid})
     cards.sort(key=lambda c: (c.get("order", 0), c["id"]))
-    body = {"cards": cards, "answers": read_dir("answers"), "broken": broken}
+    answers = read_dir("answers")
+    body = {"cards": cards, "answers": answers, "broken": broken, "send": send_state(cards, answers)}
     raw = json.dumps(body, ensure_ascii=False).encode()
     return raw, hashlib.sha1(raw).hexdigest()[:16]
+
+
+def stamp(name):
+    try:
+        return datetime.fromtimestamp(float((PROCESS / name).read_text().strip()), timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    except (OSError, ValueError):
+        return None
+
+
+def send_state(cards, answers):
+    """Answers on live cards the processor has not taken yet, and whether it is asked for, running or done."""
+    def given(a):
+        return bool(a.get("pick") or (a.get("note") or "").strip() or a.get("status") == "answered")
+    pending = sum(1 for c in cards if given(answers.get(c["id"]) or {}) and c.get("processed") != answers[c["id"]].get("at"))
+    running = subprocess.run(["pgrep", "-f", "desk-process-run"], capture_output=True).returncode == 0
+    return {"pending": pending, "requested": (PROCESS / "request").exists(), "running": running,
+            "started": stamp("started"), "finished": stamp("finished")}
 
 
 def write_json(path, doc):
@@ -125,6 +149,11 @@ class Handler(BaseHTTPRequestHandler):
         self.send(206, body, ctype, common + [("Content-Range", f"bytes {start}-{end}/{size}")])
 
     def do_POST(self):
+        if self.route()[1] == "/api/send":
+            PROCESS.mkdir(parents=True, exist_ok=True)
+            (PROCESS / "request").write_text(str(time.time()))
+            subprocess.run(["launchctl", "kickstart", f"gui/{os.getuid()}/{PROCESS_JOB}"], capture_output=True)
+            return self.send(200, json.dumps(json.loads(state()[0])["send"]).encode())
         m = re.match(r"^/api/answers/([^/]+)$", self.route()[1])
         if not m or not ID.match(m[1]):
             return self.send(404, b"{}")

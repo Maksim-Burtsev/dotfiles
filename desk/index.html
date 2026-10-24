@@ -69,6 +69,19 @@ a { color: inherit; }
 .projects button.on { background: var(--panel); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--shadow); }
 .projects button span { font: 600 12px var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; }
 .projects button.on span { color: var(--accent); }
+.sendbar { display: flex; align-items: center; gap: 9px; width: 100%; height: 40px; padding: 0 8px 0 13px; border-radius: 11px; font-size: 14.5px; font-weight: 600;
+  color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent-ring); font-variant-numeric: tabular-nums; animation: rise .4s var(--ease) both; }
+.sendbar[hidden] { display: none; }
+.sendbar:hover:enabled { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.sendbar:disabled { cursor: default; color: var(--muted); background: none; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.sendbar.ok { color: var(--add); }
+.sendbar.err { color: var(--later); }
+.sendbar kbd { margin-left: auto; }
+.sendbar i { font-size: 17px; }
+.sendbar .ph-circle-notch { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.topbar .sendbar { width: auto; height: 40px; padding: 0 12px; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+.topbar .mid { white-space: nowrap; }
 .ticks { display: flex; gap: 4px; }
 .ticks button { flex: 1; height: 6px; border-radius: 3px; background: var(--line-strong); transition: background .35s var(--ease), transform .2s var(--ease); }
 .ticks button.done { background: var(--add); }
@@ -269,6 +282,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
       <div class="projects" id="projects" role="group" aria-label="Проект" hidden></div>
       <div class="count" id="count">Загружаю…</div>
       <div class="ticks" id="ticks"></div>
+      <button class="sendbar" id="send" type="button" hidden></button>
     </div>
     <nav class="queue" id="queue"><div class="indicator" id="indicator"></div></nav>
     <div class="rail-foot">
@@ -281,6 +295,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
         <span><kbd>J</kbd><kbd>K</kbd></span><span>следующее, предыдущее</span>
         <span class="pkey" hidden><kbd>P</kbd></span><span class="pkey" hidden>другой проект</span>
         <span><kbd>T</kbd></span><span>светлая, тёмная тема</span>
+        <span><kbd>S</kbd></span><span>отправить ответы агенту</span>
       </div>
     </div>
   </aside>
@@ -289,6 +304,7 @@ textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3
     <div class="topbar">
       <button class="nav" id="prev" type="button" aria-label="Предыдущее"><i class="ph ph-caret-left"></i></button>
       <button class="mid" id="mid" type="button"><i class="ph ph-list"></i><span id="mproj"></span><b id="pos"></b><span id="mcount"></span></button>
+      <button class="sendbar" id="tsend" type="button" hidden></button>
       <button class="nav" id="next" type="button" aria-label="Следующее"><i class="ph ph-caret-right"></i></button>
     </div>
     <main id="card">
@@ -342,6 +358,7 @@ function apply(d) {
   S.all = arr(d.cards);
   S.byId = Object.fromEntries(S.all.map(c => [c.id, c]));
   S.broken = arr(d.broken);
+  if (!S.sending) S.send = d.send || null;
   for (const [id, a] of Object.entries(d.answers || {})) if (!S.pending[id]) S.answers[id] = a;
   S.projects = [...new Set(['merl', ...S.all.map(proj)])];
   if (!S.projects.includes(S.project)) S.project = 'merl';
@@ -582,7 +599,7 @@ function paint() {
   const total = S.cards.length, pos = idx(S.cur) + 1;
   const count = $('#count');
   count.className = 'count' + (total && !waiting ? ' done' : '');
-  count.replaceChildren(...(!total ? ['Пусто'] : waiting ? ['Ждут ответа ', h('b', { text: String(waiting) }), ' из ' + total] : ['Всё отвечено. Скажи Claude «готово».']));
+  count.replaceChildren(...(!total ? ['Пусто'] : waiting ? ['Ждут ответа ', h('b', { text: String(waiting) }), ' из ' + total] : ['Всё отвечено.']));
   for (const b of document.querySelectorAll('#projects button')) {
     const n = S.all.filter(c => proj(c) === b.dataset.p && !answered(S.answers[c.id])).length;
     $('span', b).textContent = n || '';
@@ -592,6 +609,7 @@ function paint() {
   $('#mcount').textContent = total ? (waiting ? `ждут ${waiting}` : 'всё') : '';
   $('#prev').disabled = !neighbour(-1);
   $('#next').disabled = !neighbour(1);
+  paintSend();
   const broken = $('#broken');
   broken.hidden = !S.broken.length;
   broken.textContent = S.broken.map(b => `Карточка ${b.id} не открылась: ${b.problem}`).join('\n');
@@ -633,6 +651,43 @@ function paint() {
   if (!noteFocused() && !S.timers[c.id] && r.note.value !== (a.note || '')) { r.note.value = a.note || ''; grow(r.note); }
 }
 
+function paintSend() {
+  const x = S.send, mins = t => Math.max(0, Math.floor((Date.now() - new Date(t)) / 60000));
+  const n = x?.pending || 0, word = n % 10 === 1 && n % 100 !== 11 ? 'ответ' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'ответа' : 'ответов';
+  let cls = '', plate = null, idle = true;
+  if (!x) {}
+  else if (x.error) { cls = ' err'; idle = false; plate = ['warning', 'Не отправилось, ещё раз', '!']; }
+  else if (x.running) { const m = x.started ? `${mins(x.started)} мин` : ''; plate = ['circle-notch', 'Агент разбирает' + (m && ' · ' + m), m || 'Разбирает']; }
+  else if (x.requested) plate = ['circle-notch', 'Отправляю', 'Отправляю'];
+  else if (n) { idle = false; plate = ['paper-plane-tilt', `Отправить ${n} ${word} агенту`, String(n)]; }
+  else if (x.finished && mins(x.finished) < 60) { cls = ' ok'; plate = ['check-circle', 'Агент разобрал в ' + time(x.finished), time(x.finished)]; }
+  for (const [b, short] of [[$('#send'), false], [$('#tsend'), true]]) {
+    b.hidden = !plate;
+    b.disabled = idle;
+    b.className = 'sendbar' + cls;
+    const sig = plate ? plate.join() + cls : '';
+    if (b.dataset.sig === sig) continue;
+    b.dataset.sig = sig;
+    b.replaceChildren(...(plate ? [icon(plate[0], cls !== ''), short ? plate[2] : plate[1], !idle && !short ? h('kbd', { text: 'S' }) : null].filter(Boolean) : []));
+  }
+}
+
+async function sendAnswers() {
+  const x = S.send;
+  if (!x || x.running || x.requested || !(x.pending || x.error)) return;
+  S.sending = true;
+  await Promise.all(Object.keys(S.timers).map(id => send(id)));
+  S.send = { ...x, error: false, requested: true };
+  paintSend();
+  try {
+    const r = await fetch('api/send', { method: 'POST' });
+    if (!r.ok) throw new Error(r.status);
+    S.send = await r.json();
+  } catch { S.send = { ...x, error: true }; }
+  S.sending = false;
+  paintSend();
+}
+
 const theme = t => {
   const root = document.documentElement;
   if (t) { root.dataset.theme = t; try { localStorage.setItem('desk-theme', t) } catch {} }
@@ -649,6 +704,7 @@ addEventListener('keydown', e => {
   if (!e.metaKey && !e.ctrlKey && !e.altKey && e.code === 'KeyT' && !/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { e.preventDefault(); flipTheme(); return; }
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (/TEXTAREA|INPUT/.test(document.activeElement?.tagName || '')) { if (e.key === 'Escape') document.activeElement.blur(); return; }
+  if (e.code === 'KeyS') { e.preventDefault(); sendAnswers(); return; }
   if (e.code === 'KeyP' && S.projects.length > 1) { e.preventDefault(); switchProject(S.projects[(S.projects.indexOf(S.project) + 1) % S.projects.length]); return; }
   const c = S.byId[S.cur];
   if (!c) return;
@@ -666,11 +722,12 @@ addEventListener('pagehide', () => { for (const id of Object.keys(S.timers)) sen
 document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
 $('#prev').onclick = () => go(neighbour(-1), -1);
 $('#next').onclick = () => go(neighbour(1), 1);
+$('#send').onclick = $('#tsend').onclick = sendAnswers;
 $('#mid').onclick = () => $('#app').classList.add('drawer');
 $('#scrim').onclick = () => $('#app').classList.remove('drawer');
 
 poll();
-setInterval(() => { if (!document.hidden) poll(); }, 2000);
+setInterval(() => { if (!document.hidden) { poll(); paintSend(); } }, 2000);
 </script>
 </body>
 </html>
