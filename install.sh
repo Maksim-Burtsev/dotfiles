@@ -200,7 +200,6 @@ link_dotfiles() {
     [[ -f "$HOME/Library/Fonts/$(basename "$f")" ]] || run_or_print cp "$f" "$HOME/Library/Fonts/"
   done
   link_file "$DOTFILES_DIR/mailctl/mailctl" "$HOME/.local/bin/mailctl"
-  link_file "$DOTFILES_DIR/kimi/kimi-task" "$HOME/.local/bin/kimi-task"
 
   # Decision desk for agents' questions, also on the tailnet at /desk (see desk/README.md).
   link_file "$DOTFILES_DIR/desk/dev.mburtsev.desk.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.desk.plist"

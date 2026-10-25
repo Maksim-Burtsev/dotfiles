@@ -40,6 +40,3 @@ fi
 # >>> agterm agent-status >>>
 [ -f "$HOME/.config/agterm/agent-status/shell/integration.sh" ] && source "$HOME/.config/agterm/agent-status/shell/integration.sh"
 # <<< agterm agent-status <<<
-
-# kimi-code
-export PATH="$HOME/.kimi-code/bin:$PATH"
