@@ -101,6 +101,11 @@
           {
             "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' active --blink",
             "type": "command"
+          },
+          {
+            "command": "/usr/bin/python3 \"$HOME/open-source/dotfiles/claude/hooks/session-title.py\"",
+            "timeout": 30,
+            "type": "command"
           }
         ]
       }
