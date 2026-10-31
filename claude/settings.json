@@ -1,6 +1,7 @@
 {
-  "agentPushNotifEnabled": true,
+  "agentPushNotifEnabled": false,
   "cleanupPeriodDays": 365,
+  "enableArtifact": true,
   "enabledPlugins": {
     "cc-plugin-you-should-know@builtin": true,
     "mattpocock-skills@mattpocock": true,
