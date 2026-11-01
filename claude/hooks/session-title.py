@@ -8,15 +8,25 @@ a session only from a prompt.
 
 A chat started from claude.ai (web, phone) runs under a `claude remote-control` server, which sets its claude.ai
 title once, from the first message, and never forwards a rename. For those chats the hook also asks Claude to push
-the title with claude.ai's own set_session_title tool."""
-import json, os, pathlib, re, subprocess, sys
+the title with claude.ai's own set_session_title tool.
+
+When a long chat fills up, the owner opens a new one in the same folder and carries on, and the old one stays open in
+the desktop app's sidebar. So on a desktop chat's first prompt the hook lists the folder's other open chats and asks
+Claude to archive the ones this chat replaces, with the desktop app's own archive_session tool."""
+import json, os, pathlib, re, subprocess, sys, time
 
 DIR = pathlib.Path.home() / ".claude" / "session-titles"
+DESKTOP = pathlib.Path.home() / "Library" / "Application Support" / "Claude" / "claude-code-sessions"
 DEFAULT = ('Format: "Project · what · stage", 2-6 words, at most ~40 characters, the project first because '
            "lists cut the end; in the language of the first message.")
 SYNC = ("Title sync from the session-title hook: claude.ai doesn't pick up this chat's local renames. First thing "
         "this turn, call mcp__claude-code-remote__set_session_title with session_id {cse} and title {title}. "
         "Don't mention it in your reply.")
+CLOSE = ("Chat cleanup from the session-title hook: when a chat gets too long, the user opens a new one and carries on "
+         "there, and the old one should close. Other open chats in this folder:\n{chats}\nIf this chat carries on the "
+         "work of any of them (the same video, task or stream, which the user moved here from), archive those with "
+         "mcp__ccd_session_mgmt__archive_session: the user agreed in advance to archiving the chats a new one replaces. "
+         "Leave chats on other work alone, and when unsure, leave it. Name the chats you archived in one short line.")
 
 
 def generate(prompt, cwd):
@@ -51,6 +61,27 @@ def remote_session_id():
     return None
 
 
+def open_desktop_chats(sid, cwd):
+    """The desktop app's other unarchived chats in this folder, newest first, one line each."""
+    chats = []
+    for p in DESKTOP.glob("*/*/local_*.json"):
+        try:
+            s = json.loads(p.read_text())
+        except (OSError, ValueError):
+            continue
+        # a chat without a CLI id yet may be this very one, still starting
+        if s.get("cwd") == cwd and not s.get("isArchived") and s.get("cliSessionId") not in (None, "", sid):
+            chats.append(s)
+    chats.sort(key=lambda s: s.get("lastActivityAt") or 0, reverse=True)
+    lines = []
+    for s in chats[:8]:
+        when = time.strftime("%d.%m %H:%M", time.localtime((s.get("lastActivityAt") or 0) / 1000))
+        wait = (s.get("postTurnSummary") or {}).get("needs_action")
+        lines.append(f"- {s.get('sessionId')} «{s.get('title') or 'untitled'}», last active {when}"
+                     + (f", waiting for: {wait}" if wait else ""))
+    return "\n".join(lines)
+
+
 def main():
     if os.environ.get("SESSION_TITLE_HOOK"):  # the Haiku call above is a claude run too
         return
@@ -60,6 +91,7 @@ def main():
         return
     DIR.mkdir(parents=True, exist_ok=True)
     want, applied, synced = DIR / sid, DIR / f"{sid}.applied", DIR / f"{sid}.synced"
+    first = not applied.exists()
     title = want.read_text().strip() if want.exists() else ""
     if not title and not applied.exists():
         title = generate(d.get("prompt") or "", d.get("cwd") or "")
@@ -79,6 +111,10 @@ def main():
     if cse:
         synced.write_text(f"{asks + 1}\t{title}")
         out["additionalContext"] = SYNC.format(cse=json.dumps(cse), title=json.dumps(title, ensure_ascii=False))
+    if first and os.environ.get("CLAUDE_CODE_ENTRYPOINT") == "claude-desktop":
+        chats = open_desktop_chats(sid, d.get("cwd") or "")
+        if chats:
+            out["additionalContext"] = CLOSE.format(chats=chats)
     if out:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", **out}}, ensure_ascii=False))
 
