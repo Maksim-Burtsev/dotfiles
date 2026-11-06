@@ -78,7 +78,7 @@
             "type": "command"
           },
           {
-            "command": "f=\"$HOME/open-source/second-brain/system/context.py\"; [ -f \"$f\" ] && /usr/bin/python3 \"$f\" --compass work; exit 0",
+            "command": "$HOME/open-source/dotfiles/claude/hooks/bridge-local-note.sh",
             "timeout": 10,
             "type": "command"
           }
@@ -141,6 +141,22 @@
     ]
   },
   "remoteControlAtStartup": true,
+  "skillOverrides": {
+    "anthropic-skills:docx": "name-only",
+    "anthropic-skills:google-workspace": "name-only",
+    "anthropic-skills:import-memory": "name-only",
+    "anthropic-skills:morning": "name-only",
+    "anthropic-skills:pdf": "name-only",
+    "anthropic-skills:pptx": "name-only",
+    "anthropic-skills:xlsx": "name-only",
+    "fewer-permission-prompts": "name-only",
+    "init": "name-only",
+    "keybindings-help": "name-only",
+    "plugin-authoring": "name-only",
+    "run": "name-only",
+    "security-review": "name-only",
+    "simplify": "name-only"
+  },
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "subagentPromptCacheTtl": "1h",
