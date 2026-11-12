@@ -1,3 +1,4 @@
+tap "koekeishiya/formulae"
 tap "maksim-burtsev/tap"
 tap "umputun/apps"
 # Asciicast to GIF converter
@@ -46,6 +47,8 @@ brew "jpeg-xl"
 brew "libmagic"
 # Postgres C API library
 brew "libpq"
+# Control external displays (USB-C/DisplayPort Alt Mode) using DDC/CI on M1 Macs
+brew "m1ddc"
 # Build and publish Rust crates as Python packages
 brew "maturin"
 # Modern and intuitive terminal-based text editor
@@ -98,6 +101,8 @@ brew "wget"
 brew "yq"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
+# Simple hotkey-daemon for macOS.
+brew "koekeishiya/formulae/skhd", trusted: true
 # Keyboard-only code navigator for the terminal
 brew "maksim-burtsev/tap/merl", trusted: true
 # Remote terminal application, with cursor shape (DECSCUSR) pass-through
