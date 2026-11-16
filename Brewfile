@@ -111,6 +111,8 @@ brew "maksim-burtsev/tap/merl", trusted: true
 brew "maksim-burtsev/tap/mosh-cursor", trusted: true
 # Terminal on libghostty with a workspace/session sidebar
 cask "umputun/apps/agterm", trusted: true
+# Terminal interface for Antigravity agents
+cask "antigravity-cli"
 # Anthropic's official Claude AI desktop app
 cask "claude"
 # Column-oriented database management system
