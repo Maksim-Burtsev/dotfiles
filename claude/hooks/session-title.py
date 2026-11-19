@@ -13,7 +13,12 @@ the title with claude.ai's own set_session_title tool.
 When a long chat fills up, the owner opens a new one in the same folder and carries on, and the old one keeps its ★
 in the desktop app's sidebar. So on a desktop chat's first prompt the hook lists the folder's other ★ chats and asks
 Claude to take the ★ off the ones this chat replaces, with the desktop app's own set_session_title tool. It doesn't
-archive them: the owner goes back to old chats for an artifact or a file."""
+archive them: the owner goes back to old chats for an artifact or a file.
+
+A chat he stopped writing to never gets another prompt, so its title freezes with its ★ and its "waiting for 4
+answers". Once a day the hook therefore sweeps the desktop app's session files itself: a chat idle for STALE_DAYS loses
+the ★ and the waiting stage, one idle for ARCHIVE_DAYS is archived (the sidebar only: transcripts stay in
+~/.claude/projects). Every change is logged to ~/.claude/session-titles/sweep.log, which is the undo list."""
 import json, os, pathlib, re, subprocess, sys, time
 
 DIR = pathlib.Path.home() / ".claude" / "session-titles"
@@ -29,6 +34,47 @@ UNSTAR = ("Chat titles from the session-title hook: when a chat gets too long, t
           "user moved here from), rename each with mcp__ccd_session_mgmt__set_session_title to its title without the "
           "leading ★; the user asked for this. Don't archive them: the user goes back to old chats. Leave chats on "
           "other work alone, and when unsure, leave it. Don't mention it in your reply.")
+
+
+STALE_DAYS, ARCHIVE_DAYS = 3, 14
+WAITING = re.compile(r"\s*·\s*(жду|ждём|ждем|waiting)\b.*$", re.I)
+
+
+def settled(title):
+    """A finished chat's title: no ★, no waiting stage."""
+    return WAITING.sub("", title.lstrip("★").lstrip()) or title
+
+
+def sweep(now=None):
+    """Once a day: unstar chats idle for STALE_DAYS and archive those idle for ARCHIVE_DAYS."""
+    stamp = DIR / "sweep.stamp"
+    now = now or time.time()
+    if stamp.exists() and now - stamp.stat().st_mtime < 86400:
+        return
+    stamp.touch()
+    for p in DESKTOP.glob("*/*/local_*.json"):
+        try:
+            s = json.loads(p.read_text())
+        except (OSError, ValueError):
+            continue
+        if s.get("isArchived"):
+            continue
+        # looking at an old chat counts: don't archive one he has just reopened
+        idle = (now - max(s.get("lastActivityAt") or 0, s.get("lastFocusedAt") or 0) / 1000) / 86400
+        old, change = s.get("title") or "", {}
+        if idle > STALE_DAYS and settled(old) != old:
+            change["title"] = settled(old)
+        if idle > ARCHIVE_DAYS:
+            change["isArchived"] = True
+        if not change:
+            continue
+        s.update(change)
+        tmp = p.with_suffix(".tmp")
+        tmp.write_text(json.dumps(s, ensure_ascii=False, separators=(",", ":")))
+        os.replace(tmp, p)
+        with open(DIR / "sweep.log", "a") as log:
+            log.write(json.dumps({"at": time.strftime("%Y-%m-%d %H:%M"), "file": str(p), "was": old, **change},
+                                 ensure_ascii=False) + "\n")
 
 
 def generate(prompt, cwd):
@@ -93,6 +139,10 @@ def main():
     if not sid:
         return
     DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        sweep()
+    except Exception:  # the sweep must never cost a chat its title
+        pass
     want, applied, synced = DIR / sid, DIR / f"{sid}.applied", DIR / f"{sid}.synced"
     first = not applied.exists()
     title = want.read_text().strip() if want.exists() else ""
@@ -123,4 +173,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ["test"]:
+        assert settled("★🎬 Florena · ролик 2 · сценарий v2 · жду 4 ответа") == "🎬 Florena · ролик 2 · сценарий v2"
+        assert settled("🎬 Florena · ролик 2 · ждём кредиты Астрид") == "🎬 Florena · ролик 2"
+        assert settled("★🎬 Florena · casino ad · review") == "🎬 Florena · casino ad · review"
+        assert settled("💻 merl · ревью") == "💻 merl · ревью"
+        print("ok")
+    else:
+        main()

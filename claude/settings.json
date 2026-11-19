@@ -123,6 +123,7 @@
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__label_message",
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__unlabel_message",
       "mcp__d06ca5cb-f8b2-42b5-bbb3-1eda5aa7a215__update_message_labels",
+      "mcp__claude-code-remote__set_session_title",
       "Artifact",
       "PushNotification",
       "Read",
