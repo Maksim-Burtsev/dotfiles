@@ -185,6 +185,7 @@ link_dotfiles() {
   fi
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+  link_file "$DOTFILES_DIR/iterm/profile.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/profile.json"
   link_file "$DOTFILES_DIR/agterm/ghostty.conf" "$HOME/.config/agterm/ghostty.conf"
   link_file "$DOTFILES_DIR/agterm/keymap.conf" "$HOME/.config/agterm/keymap.conf"
   link_file "$DOTFILES_DIR/agterm/themes" "$HOME/.config/agterm/themes"

@@ -11,7 +11,7 @@ Personal macOS dotfiles and bootstrap scripts.
   The selected model and effort level (`model`, `effortLevel`, `modelSettings`) never reach the repo: a clean filter from `.gitattributes` strips them on `git add`, so switching models in the UI does not make the repo dirty. `install.sh` enables the filter.
 - `hammerspoon/` - Hammerspoon config (Shift+Tab toggles plan/bypass mode in Claude). `init.lua` also loads `~/.hammerspoon/local.lua` when it exists: machine-local config that stays out of the repo.
 - `ghostty/` - Ghostty terminal config, symlinked to `~/.config/ghostty/config`.
-- `iterm/` - exported iTerm profile JSON for manual import.
+- `iterm/` - iTerm dynamic profile, a twin of the Ghostty setup: Monaco 15, TokyoNight Moon, the same split, tab and prompt-editing keys. Symlinked into `~/Library/Application Support/iTerm2/DynamicProfiles/`; `macos/defaults.sh` makes it the default profile.
 - `mailctl/` - `mailctl`, an IMAP client for agents and for hand use; symlinked into `~/.local/bin`. Mailboxes are described in `~/.config/mailctl/accounts.toml` (not tracked), passwords live in the Keychain under the `mailctl` service.
 - `macos/` - `defaults.sh` for appearance, menu bar, Finder, keyboard and input sources, screenshots, sound, Dock, and Mission Control. `power.sh` for sleep timers and the lock screen; it is separate because it needs `sudo` and the login password.
 - `vscode/` - VSCode settings and keybindings.
@@ -72,10 +72,9 @@ It also installs `oh-my-zsh` when `~/.oh-my-zsh` is missing - the tracked `.zshr
    ```
 6. Optional: `$(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc` - creates the `~/.fzf.zsh` that `.zshrc` sources.
 7. Create `~/.zshrc.local` with machine-local values (see **Local Values** below).
-8. iTerm: *Settings → Profiles → Other Actions → Import JSON Profiles* → `iterm/profile.json`.
-9. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
-10. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
-11. VSCode extensions are already installed by `brew bundle` - no extra step.
+8. Grant Hammerspoon Accessibility permission in *System Settings → Privacy & Security → Accessibility*. Without it `hs.eventtap` silently does nothing and Shift+Tab will not switch Claude modes.
+9. Run `claude` and sign in. Plugins are restored from `enabledPlugins` in the tracked settings.
+10. VSCode extensions are already installed by `brew bundle` - no extra step.
 
 ## Keeping the repo current
 

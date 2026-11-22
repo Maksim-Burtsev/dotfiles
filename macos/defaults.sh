@@ -103,6 +103,9 @@ defaults write com.apple.dock mru-spaces -bool false  # keep Spaces in a fixed o
 # application, switch to a Space with open windows for the application").
 defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
 
+# iTerm: the dynamic profile from iterm/profile.json (Ghostty's font, theme and keys) is the default.
+defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string 6B1E3F0A-7C2D-4E59-9A11-0C0FFEE00001
+
 # Без этого перечитывания хоткей заработает только после перелогина.
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 
