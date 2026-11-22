@@ -105,6 +105,8 @@ defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
 
 # iTerm: the dynamic profile from iterm/profile.json (Ghostty's font, theme and keys) is the default.
 defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string 6B1E3F0A-7C2D-4E59-9A11-0C0FFEE00001
+# iTerm: let apps write the clipboard (OSC 52), so a selection in Claude Code's fullscreen TUI reaches Cmd+V.
+defaults write com.googlecode.iterm2 AllowClipboardAccess -bool true
 
 # Без этого перечитывания хоткей заработает только после перелогина.
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
