@@ -1,6 +1,5 @@
 tap "koekeishiya/formulae"
 tap "maksim-burtsev/tap"
-tap "umputun/apps"
 # Asciicast to GIF converter
 brew "agg"
 # List ASCII idiomatic names and octal/decimal code-point forms
@@ -109,8 +108,6 @@ brew "koekeishiya/formulae/skhd", trusted: true
 brew "maksim-burtsev/tap/merl", trusted: true
 # Remote terminal application, with cursor shape (DECSCUSR) pass-through
 brew "maksim-burtsev/tap/mosh-cursor", trusted: true
-# Terminal on libghostty with a workspace/session sidebar
-cask "umputun/apps/agterm", trusted: true
 # Terminal interface for Antigravity agents
 cask "antigravity-cli"
 # 3D creation suite

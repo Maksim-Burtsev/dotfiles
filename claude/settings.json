@@ -33,17 +33,6 @@
     }
   },
   "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' blocked",
-            "type": "command"
-          }
-        ],
-        "matcher": "permission_prompt"
-      }
-    ],
     "PostToolUse": [
       {
         "hooks": [
@@ -54,14 +43,6 @@
           }
         ],
         "matcher": "Bash"
-      },
-      {
-        "hooks": [
-          {
-            "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' active --blink",
-            "type": "command"
-          }
-        ]
       }
     ],
     "SessionStart": [
@@ -85,23 +66,9 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' completed --auto-reset",
-            "type": "command"
-          }
-        ]
-      }
-    ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "command": "'/Users/mburtsev/.config/agterm/agent-status/agterm-claude-status.sh' active --blink",
-            "type": "command"
-          },
           {
             "command": "/usr/bin/python3 \"$HOME/open-source/dotfiles/claude/hooks/session-title.py\"",
             "timeout": 30,

@@ -13,7 +13,6 @@ work() {
     # TERM to the main process only: a normal quit, so the profile's "Continue where you left off"
     # brings the tabs back on the next `work`. Helpers are "Brave Browser Helper", not matched.
     pkill -TERM -f "MacOS/Brave Browser --.*user-data-dir=$HOME/.brave-work"
-    osascript -e 'quit app "agterm"'
     pkill -f "ssh -fN -D 1080"
     return 0
   fi
