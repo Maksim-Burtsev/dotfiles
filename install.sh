@@ -179,10 +179,6 @@ link_dotfiles() {
   # Remote Control server for the phone; launchd picks it up at the next login.
   link_file "$DOTFILES_DIR/claude/dev.mburtsev.claude-remote-control.plist" "$HOME/Library/LaunchAgents/dev.mburtsev.claude-remote-control.plist"
 
-  # pitwall lives in its own repo; link it only if that checkout is present.
-  if [[ -d "$HOME/open-source/pitwall/skills/pitwall" ]]; then
-    link_file "$HOME/open-source/pitwall/skills/pitwall" "$HOME/.claude/skills/pitwall"
-  fi
   link_file "$DOTFILES_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
   link_file "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
   link_file "$DOTFILES_DIR/iterm/profile.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/profile.json"
